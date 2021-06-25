@@ -85,8 +85,8 @@
           <el-table-column label="Action">
             <div slot-scope="{ row, $index }">
 
-                <el-tooltip content="saver status">
-                    <i class="fas fa-database " :class="{'text-success': row.saverRule ==true,'text-dark': row.saverRule==false }"></i>
+                <el-tooltip content="saver status" style="margin-right:10px">
+                    <i class="fas fa-database " :class="{'text-success': row.saverRule ,'text-dark': !row.saverRule }"></i>
               </el-tooltip>
 
 
