@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- FROM AND DEVICE-->
+    <!-- FROM ADD DEVICE-->
     <div class="row">
       <card>
         <div slot="header">
@@ -22,13 +22,16 @@
               placeholder="Ex:777, 999..."
             ></base-input>
           </div>
+
           <div class="col-4">
-            <slot>
+            <slot name="label">
               <label>Template</label>
             </slot>
+
             <el-select
               value="1"
               placeholder="Select Template"
+              class="select-primary"
               style="width:100%"
             >
               <el-option
@@ -54,7 +57,7 @@
 
         <div class="row pull-right">
           <div class="col-12">
-            <base-button type="primary" class="mb-3" size="lg">Add</base-button>
+            <base-button type="blue" class="mb-3" size="lg">Add</base-button>
           </div>
         </div>
       </card>
@@ -82,17 +85,28 @@
           ></el-table-column>
 
           <el-table-column label="Action">
-            <div slot-scope="{row}">
-              
+            <div slot-scope="{row, $index}">
+               
+              <el-tooltip content="Database Saver" >
+                  
+                  <base-switch @click="updateSaverRuleStatus($index)" :value="row.saverRule" type="blue" on-text="On" off-text="Off"></base-switch>
+              </el-tooltip>
+            
             <el-tooltip
               content="Delete"
               effect="light"
               :open-delay="300"
               placement="top"
             >
-              <el-button type="danger" icon size="sm" class="btn-link" @click="deleteDevice(row)">
-                <i class="tim-icons icon-simple-remove"></i>
-              </el-button>
+              <base-button 
+              type="danger" 
+              icon 
+              size="sm"
+              class="btn-link"
+              @click="deleteDevice(row)"
+              >
+               <i class="tim-icons icon-simple-remove"></i>
+              </base-button>
             </el-tooltip>
 
             </div>
@@ -103,6 +117,9 @@
         </el-table>
       </card>
     </div>
+  <json :value="devices">
+      {{devices}}
+  </json>
   </div>
 </template>
 
@@ -123,26 +140,34 @@ export default {
           name: "Home",
           dId: "8888",
           templateName: "Power Sensor",
-          templateId: "232gdfdd232334sdd"
+          templateId: "232gdfdd232334sdd",
+          saverRule: false,
+          cont:500
         },
         {
           name: "Office",
           dId: "3458",
           templateName: "Power Camera",
-          templateId: "232gdfgdfgiy232334sdd"
+          templateId: "232gdfgdfgiy232334sdd",
+          saverRule: true
         },
         {
           name: "Farm",
           dId: "8288",
           templateName: "Temperature",
-          templateId: "2323dgdgdfgsdd"
+          templateId: "2323dgdgdfgsdd",
+          saverRule: false
         }
       ]
     };
   },
+
   methods:{
       deleteDevice(device){
           alert("DELETING " + device.name)
+      },
+      updateSaverRuleStatus(index){
+          this.devices[index].saverRule = !this.devices[index].saverRule
       }
   }
 };

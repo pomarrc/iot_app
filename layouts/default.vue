@@ -45,17 +45,12 @@
         >
         </sidebar-item>
 
-        
 
-
-
-
-
-
-        
       </template>
     </side-bar>
 
+ <!--Share plugin (for demo purposes). You can remove it if don't plan on using it-->
+        <sidebar-share :background-color.sync="sidebarBackground"> </sidebar-share>
 
 
   
@@ -64,10 +59,7 @@
       <dashboard-navbar></dashboard-navbar>
       <router-view name="header"></router-view>
 
-      <div
-        :class="{ content: !isFullScreenRoute }"
-        @click="toggleSidebar"
-      >
+      <div :class="{ content: !isFullScreenRoute }" @click="toggleSidebar">
         <zoom-center-transition :duration="1000" mode="out-in">
           <!-- your content here -->
           <nuxt></nuxt>
