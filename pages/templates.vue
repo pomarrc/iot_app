@@ -594,7 +594,6 @@ export default {
       widgetType: "",
       templateName: "",
       templateDescription: "",
-
       ncConfig: {
         userId: "sampleuserid",
         selectedDevice: {
@@ -612,7 +611,6 @@ export default {
         chartTimeAgo: 1566,
         demo: true
       },
-
       iotSwitchConfig: {
         userId: "userid",
         selectedDevice: {
@@ -626,7 +624,6 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
-
       iotButtonConfig: {
         userId: "userid",
         selectedDevice: {
@@ -641,7 +638,6 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
-
       iotIndicatorConfig: {
         userId: "userid",
         selectedDevice: {
@@ -655,9 +651,6 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
-
-      value: false,
-
       configButton: {
         userId: "userid",
         selectedDevice: {
@@ -675,7 +668,6 @@ export default {
         class: "danger",
         message: "{'fanstatus': 'stop'}"
       },
-
       configIndicator: {
         userId: "userid",
         selectedDevice: {
@@ -698,9 +690,36 @@ export default {
   methods: {
    addNewWidget(){
        if (this.widgetType == "numberchart"){
-           this.widgets.push(this.ncConfig)
+           this.ncConfig.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.ncConfig)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
        }
-   }
+       if (this.widgetType == "switch"){
+           this.iotSwitchConfig.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.iotSwitchConfig)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
+       }
+       if (this.widgetType == "button"){
+           this.iotButtonConfig.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.iotButtonConfig)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
+       }
+       if (this.widgetType == "indicator"){
+           this.configIndicator.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.configIndicator)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
+       }
+   },
+
+    makeid(length) {
+      var result = "";
+      var characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      var charactersLength = characters.length;
+      for (var i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
+      }
+      return result;
+    }
+
   }
 };
 </script>
