@@ -42,7 +42,11 @@ export default {
     //userId/dId/uniquestr/sdata
     const topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata";
     console.log(topic);
-    this.$nuxt.$on(topic, this.processReceivedData)
+    this.$nuxt.$on(topic, this.processReceivedData)//sistema de mensajeria de nuxt para recibir
+  },
+  beforeDestroy(){
+    this.$nuxt.$off(this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata")//para evitar en comportamiento se 
+                                                                                                                      //suscripcion multiple
   },
   methods: {
     processReceivedData(data) {
