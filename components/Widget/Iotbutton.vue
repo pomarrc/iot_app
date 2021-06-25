@@ -18,28 +18,12 @@
 
 <script>
 export default {
-  //props:['config'],
+  props:['config'],
   
   data() {
     return {
       sending:false,
-      config: {
-        userId: "userid",
-        selectedDevice: {
-          name: "Office",
-          dId: "3458",
-          templateName: "Power Camera",
-          templateId: "232gdfgdfgiy232334sdd",
-          saverRule: true
-        },
-        variableFullName: "Pump",
-        variable: "uniquestr",
-        icon: "fa-sun",
-        column: "col-6",
-        widget: "indicator",
-        class: "success",
-        message:"{'fanstatus':'stop'}"
-      }
+     
     };
   },
   mounted() {

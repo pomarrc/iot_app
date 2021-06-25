@@ -1,7 +1,7 @@
 <template>
   <div class="row">
    
-   <iotbutton></iotbutton>
+   <iotbutton :config="configButton"></iotbutton>
       
   </div>
 </template>
@@ -11,6 +11,24 @@ export default {
   data() {
     return {
       value: false,
+       
+      configButton: {
+        userId: "userid",
+        selectedDevice: {
+          name: "Office",
+          dId: "3458",
+          templateName: "Power Camera",
+          templateId: "232gdfgdfgiy232334sdd",
+          saverRule: true
+        },
+        variableFullName: "Pump",
+        variable: "uniquestr",
+        icon: "fa-sun",
+        column: "col-6",
+        widget: "indicator",
+        class: "success",
+        message:"{'fanstatus':'stop'}"
+      },
 
       configIndicator: {
         userId: "userid",
