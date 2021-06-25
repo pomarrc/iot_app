@@ -1,5 +1,5 @@
 <template>
-    <h2>
-        Templates
-    </h2>
+   <div>
+       <iotindicator></iotindicator>
+   </div>
 </template>
