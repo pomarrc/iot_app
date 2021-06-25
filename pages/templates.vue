@@ -26,7 +26,7 @@ export default {
         icon: "fa-sun",
         column: "col-6",
         widget: "indicator",
-        class: "success",
+        class: "blue",//success> verde, primary >morado, blue>azul
         message:"{'fanstatus':'stop'}"
       },
 
