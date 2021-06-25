@@ -50,28 +50,28 @@
             <div v-if="widgetType == 'numberchart'">
               <!-- var name -->
               <base-input
-                v-model="ncConfig.variableFullName"
+                v-model="configNumberChart.variableFullName"
                 label="Var Name"
                 type="text"
               >
               </base-input>
               <!-- unit -->
-              <base-input v-model="ncConfig.unit" label="Unit" type="text">
+              <base-input v-model="configNumberChart.unit" label="Unit" type="text">
               </base-input>
               <!-- decimal places -->
               <base-input
-                v-model="ncConfig.decimalPlaces"
+                v-model="configNumberChart.decimalPlaces"
                 label="Decimal Places"
                 type="number"
               >
               </base-input>
               <!-- var icon -->
-              <base-input v-model="ncConfig.icon" label="Icon" type="text">
+              <base-input v-model="configNumberChart.icon" label="Icon" type="text">
               </base-input>
               <br />
               <!-- Chart Back Time -->
               <base-input
-                v-model="ncConfig.chartTimeAgo"
+                v-model="configNumberChart.chartTimeAgo"
                 label="Char Back Time (mins)"
                 type="number"
               >
@@ -79,7 +79,7 @@
               <br />
               <!-- select success -->
               <el-select
-                v-model="ncConfig.class"
+                v-model="configNumberChart.class"
                 class="select-success"
                 placeholder="Select Class"
                 style="width: 100%"
@@ -108,7 +108,7 @@
               <br /><br /><br />
               <!-- select width column -->
               <el-select
-                v-model="ncConfig.column"
+                v-model="configNumberChart.column"
                 class="select-success"
                 placeholder="Select Column Width"
                 style="width: 100%"
@@ -171,21 +171,21 @@
             <div v-if="widgetType == 'switch'">
               <!--var name-->
               <base-input
-                v-model="iotSwitchConfig.variableFullName"
+                v-model="configSwitch.variableFullName"
                 label="Var Name"
                 type="text"
               >
               </base-input>
               <!--icon-->
               <base-input
-                v-model="iotSwitchConfig.icon"
+                v-model="configSwitch.icon"
                 label="Icon"
                 type="text"
               ></base-input>
               <br />
               <!--select success-->
               <el-select
-                v-model="iotSwitchConfig.class"
+                v-model="configSwitch.class"
                 class="select-success"
                 placeholder="Select Class"
                 style="width: 100%;"
@@ -214,7 +214,7 @@
               <br /><br /><br />
               <!--select width colum-->
               <el-select
-                v-model="iotSwitchConfig.column"
+                v-model="configSwitch.column"
                 class="select-success"
                 placeholder="Select Column Width"
                 style="width: 100%;"
@@ -277,35 +277,35 @@
             <div v-if="widgetType == 'button'">
               <!--var name -->
               <base-input
-                v-model="iotButtonConfig.variableFullName"
+                v-model="configButton.variableFullName"
                 label="Var Name"
                 type="text"
               >
               </base-input>
               <!--massage to send -->
               <base-input
-                v-model="iotButtonConfig.message"
+                v-model="configButton.message"
                 label="Message to send"
                 type="text"
               >
               </base-input>
               <!--button text -->
               <base-input
-                v-model="iotButtonConfig.text"
+                v-model="configButton.text"
                 label="Button Text"
                 type="text"
               >
               </base-input>
               <!--icon -->
               <base-input
-                v-model="iotButtonConfig.icon"
+                v-model="configButton.icon"
                 label="Icon"
                 type="text"
               ></base-input>
               <br />
               <!--select success -->
               <el-select
-                v-model="iotButtonConfig.class"
+                v-model="configButton.class"
                 class="select-success"
                 placeholder="Select Class"
                 style="width: 100%;"
@@ -334,7 +334,7 @@
               <br /><br /><br />
               <!--select width colum -->
               <el-select
-                v-model="iotButtonConfig.column"
+                v-model="configButton.column"
                 class="select-success"
                 placeholder="Select Column Width"
                 style="width: 100%;"
@@ -505,15 +505,15 @@
           <div class="col-6">
             <Rtnumberchart
               v-if="widgetType == 'numberchart'"
-              :config="ncConfig"
+              :config="configNumberChart"
             ></Rtnumberchart>
             <Iotswitch
               v-if="widgetType == 'switch'"
-              :config="iotSwitchConfig"
+              :config="configSwitch"
             ></Iotswitch>
             <Iotbutton
               v-if="widgetType == 'button'"
-              :config="iotButtonConfig"
+              :config="configButton"
             ></Iotbutton>
             <Iotindicator
               v-if="widgetType == 'indicator'"
@@ -539,7 +539,7 @@
     </div>
     <!-- DASHBOARD PREVIEW -->
     <div class="row">
-      <div v-for="(widget, index) of widgets" :class="[widget.column]">
+      <div v-for="(widget, index) of widgets" :key="index" :class="[widget.column]">
         <i
           aria-hidden="true"
           class="fa fa-trash text-warning pull-right"
@@ -565,6 +565,8 @@
         ></iotindicator>
       </div>
     </div>
+    <!-- JSONS -->
+    <Json :value="widgets"></Json>
   </div>
 </template>
 
@@ -594,7 +596,7 @@ export default {
       widgetType: "",
       templateName: "",
       templateDescription: "",
-      ncConfig: {
+      configNumberChart: {
         userId: "sampleuserid",
         selectedDevice: {
           name: "Home",
@@ -611,7 +613,7 @@ export default {
         chartTimeAgo: 1566,
         demo: true
       },
-      iotSwitchConfig: {
+      configSwitch: {
         userId: "userid",
         selectedDevice: {
           name: "Home",
@@ -624,7 +626,7 @@ export default {
         icon: "fa-bath",
         column: "col-6"
       },
-      iotButtonConfig: {
+      configButton: {
         userId: "userid",
         selectedDevice: {
           name: "Home",
@@ -690,16 +692,16 @@ export default {
   methods: {
    addNewWidget(){
        if (this.widgetType == "numberchart"){
-           this.ncConfig.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
-           this.widgets.push(JSON.parse(JSON.stringify(this.ncConfig)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
+           this.configNumberChart.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.configNumberChart)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
        }
        if (this.widgetType == "switch"){
-           this.iotSwitchConfig.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
-           this.widgets.push(JSON.parse(JSON.stringify(this.iotSwitchConfig)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
+           this.configSwitch.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.configSwitch)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
        }
        if (this.widgetType == "button"){
-           this.iotButtonConfig.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
-           this.widgets.push(JSON.parse(JSON.stringify(this.iotButtonConfig)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
+           this.configButton.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
+           this.widgets.push(JSON.parse(JSON.stringify(this.configButton)))//una manera para evitar la copia por referencia con JSON (no es la mas aceptada) 
        }
        if (this.widgetType == "indicator"){
            this.configIndicator.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 
@@ -718,7 +720,12 @@ export default {
         );
       }
       return result;
+    },
+
+    deleteWidget(index){
+        this.widgets.splice(index,1);
     }
+
 
   }
 };
