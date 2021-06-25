@@ -69,14 +69,12 @@
           <h4 class="card-title">Devices</h4>
         </div>
         <el-table :data="devices">
-
-          <el-table-column  label="#" min-width="50" align="center">
-             <div slot-scope= "{ $index }">
-               {{$index + 1 }}
-             </div>
-
+          <el-table-column label="#" min-width="50" align="center">
+            <div slot-scope="{ $index }">
+              {{ $index + 1 }}
+            </div>
           </el-table-column>
-         
+
           <el-table-column prop="name" label="Name"></el-table-column>
           <el-table-column prop="dId" label="Device Id"></el-table-column>
           <el-table-column
@@ -85,41 +83,47 @@
           ></el-table-column>
 
           <el-table-column label="Action">
-            <div slot-scope="{row, $index}">
-               
-              <el-tooltip content="Database Saver" >
-                  
-                  <base-switch @click="updateSaverRuleStatus($index)" :value="row.saverRule" type="blue" on-text="On" off-text="Off"></base-switch>
+            <div slot-scope="{ row, $index }">
+
+                <el-tooltip content="saver status">
+                    <i class="fas fa-database " :class="{'text-success': row.saverRule ==true,'text-dark': row.saverRule==false }"></i>
               </el-tooltip>
-            
-            <el-tooltip
-              content="Delete"
-              effect="light"
-              :open-delay="300"
-              placement="top"
-            >
-              <base-button 
-              type="danger" 
-              icon 
-              size="sm"
-              class="btn-link"
-              @click="deleteDevice(row)"
+
+
+              <el-tooltip content="Database Saver">
+                <base-switch
+                  @click="updateSaverRuleStatus($index)"
+                  :value="row.saverRule"
+                  type="blue"
+                  on-text="On"
+                  off-text="Off"
+                ></base-switch>
+              </el-tooltip>
+              <!-- BOTTON DELETE -->
+              <el-tooltip
+                content="Delete"
+                effect="light"
+                :open-delay="300"
+                placement="top"
               >
-               <i class="tim-icons icon-simple-remove"></i>
-              </base-button>
-            </el-tooltip>
-
+                <base-button
+                  type="danger"
+                  icon
+                  size="sm"
+                  class="btn-link"
+                  @click="deleteDevice(row)"
+                >
+                  <i class="tim-icons icon-simple-remove"></i>
+                </base-button>
+              </el-tooltip>
             </div>
-           
-
           </el-table-column>
-
         </el-table>
       </card>
     </div>
-  <json :value="devices">
-      {{devices}}
-  </json>
+    <json :value="devices">
+      {{ devices }}
+    </json>
   </div>
 </template>
 
@@ -142,7 +146,7 @@ export default {
           templateName: "Power Sensor",
           templateId: "232gdfdd232334sdd",
           saverRule: false,
-          cont:500
+          cont: 500
         },
         {
           name: "Office",
@@ -162,13 +166,13 @@ export default {
     };
   },
 
-  methods:{
-      deleteDevice(device){
-          alert("DELETING " + device.name)
-      },
-      updateSaverRuleStatus(index){
-          this.devices[index].saverRule = !this.devices[index].saverRule
-      }
+  methods: {
+    deleteDevice(device) {
+      alert("DELETING " + device.name);
+    },
+    updateSaverRuleStatus(index) {
+      this.devices[index].saverRule = !this.devices[index].saverRule;
+    }
   }
 };
 </script>
