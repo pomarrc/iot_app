@@ -18,7 +18,7 @@ app.use(cors());//le pasamos las politicas a express para que esten incluidas
 
 //express routes
 app.use('/api',require('./routes/devices.js'));
-
+app.use('/api',require('./routes/users.js'));
 
 module.exports = app;//ordenar todad nuestras rutas o endpoint en archivos separados
 //listener
@@ -28,5 +28,44 @@ app.listen(3001,()=> {
 
 //end point test
 
-// MONGO_INITDB_ROOT_USERNAME: "devuser"
-//MONGO_INITDB_ROOT_PASSWORD: "devpassword"
+
+
+
+//Mongo connections
+const mongoUserName = "devuser";
+const mongoPassword = "devpassword";
+const mongoHost = "localhost";
+const mongoPort = "27017"
+const mongoDatabase = "ioticos_god_level";
+
+var url = "mongodb://" + mongoUserName + ":" + mongoPassword + "@" + mongoHost + ":" + mongoPort + "/" + mongoDatabase;
+
+const options = {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    authSource: "admin"
+}; 
+
+try {
+    mongoose.connect(url,options).then(()=>{
+        console.log("\n");
+        console.log("************************************".blue);
+        console.log(" :) Mongo Successfully Connected!".blue);
+        console.log("************************************".blue);
+        console.log("\n");
+    },
+    (err)=>{
+        console.log("\n");
+        console.log("************************************".red);
+        console.log(" :( Mongo Connetion Failed!".red);
+        console.log("************************************".red);
+        console.log("\n");
+    });
+
+} catch(error){
+    console.log("ERROR CONNETING MONGO");
+    console.log(error);
+}
+
