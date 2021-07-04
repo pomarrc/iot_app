@@ -19,6 +19,7 @@ app.use(cors());//le pasamos las politicas a express para que esten incluidas
 //express routes
 app.use('/api',require('./routes/devices.js'));
 app.use('/api',require('./routes/users.js'));
+//app.use('/api',require('./models/user.js'));
 
 module.exports = app;//ordenar todad nuestras rutas o endpoint en archivos separados
 //listener

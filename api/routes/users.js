@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 //modell import
-import User from '../models/user.js'
+import User from "../models/user.js";
 
 //post ->req.body
 //get ->req.query
@@ -26,6 +26,7 @@ router.post("/login", async(req,res) =>{
     //if user and email ok
     if(bcrypt.compareSync(password,user.password)){
         user.set('password',undefined,{strict:false});//elimina el campo password de user para no incluirlo en el token
+        //                              clave de cifrado firmado por mi         tiempo de expiracion en segundos
         const token = jwt.sign({userData:user},'securePasswordHere',{expiresIn: 60*60*24*30});
         const toSend = {
             status: "success",
