@@ -40,7 +40,7 @@
             type="blue"
             class="mb-3"
             size="lg"
-            @click="register"
+            @click="register()"
             block
           >
             Register
@@ -63,6 +63,7 @@
   </div>
 </template>
 <script>
+import { Message } from 'element-ui';
 export default {
   layout: "auth",
   data() {
@@ -74,7 +75,48 @@ export default {
       }
     };
   },
-  methods: {}
+  methods: {
+    register(){
+      this.$axios.post("/register", this.user)
+      .then((res) => {
+        if(res.data.status == "success"){
+           this.$notify({
+          type: "success",
+          icon: "tim-icons icon-check-2",
+          message: "Success! Now you can login..."
+        });
+       
+        this.user.name ="";
+        this.user.password ="";
+        this.user.email ="";
+         return;
+        }
+       
+      
+      
+      })
+      .catch((e)=>{
+        console.log(e.response.data);
+        if(e.response.data.error.errors.email.kind == "unique"){
+           this.$notify({
+          type: "danger",
+          icon: "tim-icons icon-alert-circle-ext",
+          message: "User already exists :("
+        });
+        return; 
+        }else{
+           this.$notify({
+          type: "danger",
+          icon: "tim-icons icon-alert-circle-ext",
+          message: "Error creating user"
+        });
+        return;
+        }
+      });
+    
+    
+    }
+  }
 };
 </script>
 <style>

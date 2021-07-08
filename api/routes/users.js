@@ -66,6 +66,7 @@ router.post("/register",async(req,res) =>{
         const toSend = {
             status:"success"
         }
+        console.log(toSend);
         res.status(200).json(toSend);
         
     } catch (error) {

@@ -4,10 +4,10 @@
       <card class="card-login card-white">
         <template slot="header">
           <img src="img//card-info.png" alt="" />
-          <h1 class="card-title">IoT GL</h1>
+          <h1 class="card-title">IoT GL {{$store.state.auth}} </h1>
         </template>
 
-        <div>
+        <div> 
           <base-input
             name="email"
             v-model="user.email"
@@ -46,7 +46,9 @@
           </div>
 
           <div class="pull-right">
-            <h6><a href="#help!!!" class="link footer-link-blue">Need Help?</a></h6>
+            <h6>
+              <a href="#help!!!" class="link footer-link-blue">Need Help?</a>
+            </h6>
           </div>
         </div>
       </card>
@@ -66,6 +68,50 @@ export default {
         password: ""
       }
     };
+  },
+  mounted(){
+    
+
+  },
+  methods: {
+    login() {
+      this.$axios
+        .post("/login", this.user)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: "Success! Hello! " + res.data.userData.name + " :)"
+            });
+            console.log(res.data);
+            const auth = {
+              token: res.data.token,
+              userData: res.data.userData
+            }
+            this.$store.commit('setAuth',auth);
+            return;
+          }
+        })
+        .catch(e => {
+          console.log(e.response.data);
+          if (e.response.data.error.errors.email.kind == "unique") {
+            this.$notify({
+              type: "danger",
+              icon: "tim-icons icon-alert-circle-ext",
+              message: "User already exists :("
+            });
+            return;
+          } else {
+            this.$notify({
+              type: "danger",
+              icon: "tim-icons icon-alert-circle-ext",
+              message: "Error creating user"
+            });
+            return;
+          }
+        });
+    }
   }
 };
 </script>
