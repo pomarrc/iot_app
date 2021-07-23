@@ -565,6 +565,106 @@
         ></iotindicator>
       </div>
     </div>
+
+    <!-- SAVE TEMPLATE-->
+    <div class="row">
+      <card>
+        <div slot="header">
+          <h4 class="card-title">Save Template</h4>
+        </div>
+
+        <div class="row">
+          <base-input
+            class="col-4"
+            v-model="templateName"
+            label="Template Name"
+            type="text"
+          >
+          </base-input>
+
+          <base-input
+            class="col-8"
+            v-model="templateDescription"
+            label="Template Description"
+            type="text"
+          >
+          </base-input>
+        </div>
+
+        <br /><br />
+
+        <div class="row">
+          <div class="col-12">
+            <base-button
+              native-type="submit"
+              type="primary"
+              class="mb-3 pull-right"
+              size="lg"
+              @click="saveTemplate()"
+              :disabled="widgets.length == 0"
+            >
+              Save Template
+            </base-button>
+          </div>
+        </div>
+      </card>
+    </div>
+
+    <!-- TEMPLATES TABLE -->
+    <div class="row">
+      <card>
+        <div slot="header">
+          <h4 class="card-title">Templates</h4>
+        </div>
+
+        <div class="row">
+          <el-table :data="templates">
+            
+            <el-table-column min-width="50" label="#" align="center">
+              <div class="photo" slot-scope="{ row, $index }">
+                {{ $index + 1 }}
+              </div>
+            </el-table-column>
+
+            <el-table-column prop="name" label="Name"></el-table-column>
+
+            <el-table-column
+              prop="description"
+              label="Description"
+            ></el-table-column>
+
+            <el-table-column
+              prop="widgets.length"
+              label="Widgets"
+            ></el-table-column>
+
+            <el-table-column header-align="right" align="right" label="Actions">
+              <div
+                slot-scope="{ row, $index }"
+                class="text-right table-actions"
+              >
+                <el-tooltip
+                  content="Delete"
+                  effect="light"
+                  :open-delay="300"
+                  placement="top"
+                >
+                  <base-button
+                    @click="deleteTemplate(row)"
+                    type="danger"
+                    icon
+                    size="sm"
+                    class="btn-link"
+                  >
+                    <i class="tim-icons icon-simple-remove "></i>
+                  </base-button>
+                </el-tooltip>
+              </div>
+            </el-table-column>
+          </el-table>
+        </div>
+      </card>
+    </div>
     <!-- JSONS -->
     <Json :value="widgets"></Json>
   </div>
@@ -579,6 +679,7 @@ import Iotbutton from '../components/Widget/Iotbutton.vue';
 import Iotindicator from '../components/Widget/Iotindicator.vue';
 
 export default {
+   middleware: 'authenticated',
   components: {
     Rtnumberchart,
     Iotswitch,
@@ -688,8 +789,116 @@ export default {
       }
     };
   },
-
+  mounted(){
+    this.getTemplates();
+  },
   methods: {
+    //get template   
+    async getTemplates() {
+
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.token
+        }
+      };
+
+      try {
+        const res = await this.$axios.get("/template", axiosHeaders);
+        console.log(res.data);
+
+        if (res.data.status == "success") {
+          this.templates = res.data.data;
+        }
+      } catch (error) {
+        this.$notify({
+          type: "danger",
+          icon: "tim-icons icon-alert-circle-exc",
+          message: "Error getting templates..."
+        });
+        console.log(error);
+        return;
+      }
+    },
+    //save template
+    async saveTemplate() {
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.token
+        }
+      };
+
+      console.log(axiosHeaders)
+
+      const toSend = {
+        template: {
+          name: this.templateName,
+          description: this.templateDescription,
+          widgets: this.widgets
+        }
+      };
+      
+
+      try {
+
+        const res = await this.$axios.post("/template", toSend, axiosHeaders);
+
+        if (res.data.status == "success") {
+          this.$notify({
+            type: "success",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: "Template created!"
+          });
+          this.getTemplates();
+        }
+      } catch (error) {
+        this.$notify({
+          type: "danger",
+          icon: "tim-icons icon-alert-circle-exc",
+          message: "Error creating template..."
+        });
+        console.log(error);
+        return;
+      }
+    },
+     //Delete Template
+    async deleteTemplate(template) {
+
+      
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.token
+        },
+        params:{
+          templateId:template._id
+        }
+      };
+
+      console.log(axiosHeaders);
+
+      try {
+
+        const res = await this.$axios.delete("/template", axiosHeaders);
+
+        if (res.data.status == "success") {
+          this.$notify({
+            type: "success",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: template.name + " was deleted!"
+          });
+          
+          this.getTemplates();
+        }
+      } catch (error) {
+        this.$notify({
+          type: "danger",
+          icon: "tim-icons icon-alert-circle-exc",
+          message: "Error getting templates..."
+        });
+        console.log(error);
+        return;
+      }
+    },
+    //add widget
    addNewWidget(){
        if (this.widgetType == "numberchart"){
            this.configNumberChart.variable= this.makeid(10)//por lo mientras en el fron se genera la variable unica 

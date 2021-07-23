@@ -4,7 +4,7 @@
       <card class="card-login card-white">
         <template slot="header">
           <img src="img//card-info.png" alt="" />
-          <h1 class="card-title">IoT GL {{$store.state.auth}} </h1>
+          <h1 class="card-title">IoT GL  </h1>
         </template>
 
         <div> 
@@ -59,6 +59,7 @@
 <script>
 const Cookie = process.client ? require("js-cookie") : undefined;
 export default {
+  middleware: 'notAuthenticated',
   name: "login-page",
   layout: "auth",
   data() {
@@ -89,7 +90,11 @@ export default {
               token: res.data.token,
               userData: res.data.userData
             }
+            //token para acceso global con estados en tienda
             this.$store.commit('setAuth',auth);
+            //guardamos el token en local storage
+            localStorage.setItem('auth',JSON.stringify(auth));
+            $nuxt.$router.push('/dashboard');
             return;
           }
         })

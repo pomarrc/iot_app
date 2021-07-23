@@ -65,6 +65,7 @@
 <script>
 import { Message } from 'element-ui';
 export default {
+   middleware: 'notAuthenticated',
   layout: "auth",
   data() {
     return {
