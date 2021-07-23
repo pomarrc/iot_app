@@ -94,7 +94,7 @@
 
               <el-tooltip content="Database Saver">
                 <base-switch
-                  @click="updateSaverRuleStatus(row)"
+                  @click="updateSaverRuleStatus(row.saverRule)"
                   :value="row.saverRule.status"
                   type="blue"
                   on-text="On"
@@ -298,8 +298,45 @@ export default {
         });
     },
 
-    updateSaverRuleStatus(index) {
-      this.devices[index].saverRule = !this.devices[index].saverRule;
+    updateSaverRuleStatus(rule) {
+      var ruleCopy = JSON.parse(JSON.stringify(rule));
+
+      ruleCopy.status = !ruleCopy.status;
+
+      const toSend = {
+        rule: ruleCopy
+      };
+
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.token
+        }
+      };
+
+      this.$axios
+        .put("/saver-rule", toSend, axiosHeaders)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$store.dispatch("getDevices");
+
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: " Device Saver Status Updated"
+            });
+          }
+
+          return;
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error updating saver rule status"
+          });
+          return;
+        });
     }
   }
 };

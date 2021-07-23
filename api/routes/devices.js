@@ -82,12 +82,12 @@ router.post("/device",checkAuth, async(req, res)=>{
         var newDevice = req.body.newDevice;
         newDevice.userId = userId;
         newDevice.createdTime = Date.now();
-        const device = await Device.create(newDevice);
         
-        //createSaverRule(userId,newDevice.dId, false);
-       await createSaverRule(userId, newDevice.dId, true);
-        //createSaverRule("121212","11111",false);
-       await selectDevice(userId, newDevice.dId);//LO PONE EN TRUE CUANDO SE CREA
+        await createSaverRule(userId, newDevice.dId, true);
+      
+        const device = await Device.create(newDevice);
+       
+        await selectDevice(userId, newDevice.dId);//LO PONE EN TRUE CUANDO SE CREA
         const toSend = {
         status: "success",
 
@@ -137,7 +137,7 @@ router.delete("/device", checkAuth, async(req, res)=>{//PENDIENTE
 
 
 });
-//UPDATE DEVICE
+//UPDATE DEVICE (SELECTOR)
 router.put("/device",checkAuth, (req, res)=>{
     const dId = req.body.dId;
     const userId = req.userData._id;
@@ -158,6 +158,24 @@ router.put("/device",checkAuth, (req, res)=>{
 
     }
     
+
+});
+//SAVER-RULE STATUS UPDATER
+router.put('/saver-rule', checkAuth, async (req, res) => {
+
+  
+  const rule = req.body.rule;
+
+  console.log(rule)
+
+  await updateSaverRuleStatus(rule.emqxRuleId, rule.status)
+
+  const toSend = {
+    status: "success"
+  };
+
+  res.json(toSend);
+  
 
 });
 
