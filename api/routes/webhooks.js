@@ -2,9 +2,29 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const colors = require("colors");
-
+/*
+#     # ####### ######  ####### #        #####  
+##   ## #     # #     # #       #       #     # 
+# # # # #     # #     # #       #       #       
+#  #  # #     # #     # #####   #        #####  
+#     # #     # #     # #       #             # 
+#     # #     # #     # #       #       #     # 
+#     # ####### ######  ####### #######  ##### 
+*/
 import Data from "../models/data.js";
 import Device from "../models/device.js";
+import Notification from "../models/notifications";
+
+/*
+                 
+   ##   #####  # 
+  #  #  #    # # 
+ #    # #    # # 
+ ###### #####  # 
+ #    # #      # 
+ #    # #      # 
+                 
+*/
 
 router.post("/saver-webhook", async (req, res) => {
   if (req.headers.token != "121212") {
@@ -43,13 +63,31 @@ router.post("/alarm-webhook", async (req, res) => {
       return;
     }
 
-    const data = req.body;
-    console.log(data);
+    const incomingAlarm = req.body;
+    console.log(incomingAlarm);
+    saveNotifToMongo(incomingAlarm);
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
     res.sendStatus(200);
   }
 });
+/*
+                                                          
+ ###### #    # #    #  ####  ##### #  ####  #    #  ####  
+ #      #    # ##   # #    #   #   # #    # ##   # #      
+ #####  #    # # #  # #        #   # #    # # #  #  ####  
+ #      #    # #  # # #        #   # #    # #  # #      # 
+ #      #    # #   ## #    #   #   # #    # #   ## #    # 
+ #       ####  #    #  ####    #   #  ####  #    #  ####  
+                                                          
+*/
+
+function saveNotifToMongo(incomingAlarm) {
+  var newNotif = incomingAlarm;
+  newNotif.time = Date.now();
+  newNotif.readed = false;
+  Notification.create(newNotif);
+}
 
 module.exports = router;
