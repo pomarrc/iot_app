@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const colors = require("colors");
+var mqtt = require("mqtt");
 /*
 #     # ####### ######  ####### #        #####  
 ##   ## #     # #     # #       #       #     # 
@@ -15,7 +16,11 @@ import Data from "../models/data.js";
 import Device from "../models/device.js";
 import Notification from "../models/notifications";
 import AlarmRule from "../models/emqx_alarm_rule.js";
+
+var client;
 /*
+
+
                  
    ##   #####  # 
   #  #  #    # # 
@@ -25,7 +30,7 @@ import AlarmRule from "../models/emqx_alarm_rule.js";
  #    # #      # 
                  
 */
-
+//SAVER WEBHOOK
 router.post("/saver-webhook", async (req, res) => {
   if (req.headers.token != "121212") {
     req.sendStatus(404);
@@ -55,7 +60,7 @@ router.post("/saver-webhook", async (req, res) => {
 
   console.log(data);
 });
-
+//ALARM WEBHOOK
 router.post("/alarm-webhook", async (req, res) => {
   try {
     if (req.headers.token != "121212") {
@@ -77,12 +82,14 @@ router.post("/alarm-webhook", async (req, res) => {
     if (lastNotif == 0) {
       console.log("FIRST TIME ALARM");
       saveNotifToMongo(incomingAlarm); //si no hay ninguna notificacion anterior
+      sendMqttNotif(incomingAlarm);
     } else {
       const lastNotifToNowMins = (Date.now() - lastNotif[0].time) / 1000 / 60; //pasamos ms a s
 
       if (lastNotifToNowMins > incomingAlarm.triggerTime) {
         console.log("TRIGGERED");
         saveNotifToMongo(incomingAlarm);
+        sendMqttNotif(incomingAlarm);
       }
     }
   } catch (error) {
@@ -100,7 +107,53 @@ router.post("/alarm-webhook", async (req, res) => {
  #       ####  #    #  ####    #   #  ####  #    #  ####  
                                                           
 */
+//CONNECT CLIENT MQTT
+function startMqttClient() {
+  const options = {
+    port: 1883,
+    host: "localhost",
+    clientId:
+      "webhook_superuser" + Math.round(Math.random() * (0 - 10000) * -1),
+    username: "superuser",
+    password: "superuser",
+    keepalive: 60,
+    reconnectPeriod: 5000,
+    protocolId: "MQIsdp",
+    protocolVersion: 3,
+    clean: true,
+    encoding: "utf8"
+  };
 
+  client = mqtt.connect("mqtt://" + "localhost", options);
+
+  client.on("connect", function() {
+    console.log("MQTT CONNECTION -> SUCCESS;".green);
+    console.log("\n");
+  });
+
+  client.on("reconnect", error => {
+    console.log("RECONNECTING MQTT");
+    console.log(error);
+  });
+
+  client.on("error", error => {
+    console.log("MQTT CONNECIONT FAIL -> ");
+    console.log(error);
+  });
+}
+//SEND NOTIFI MQTT
+function sendMqttNotif(notif) {
+  const topic = notif.userId + "/dummy-did/dummy-var/notif"; //enviado a un usuario en particular
+  const msg =
+    "The rule: when the " +
+    notif.variableFullName +
+    " is " +
+    notif.condition +
+    " than " +
+    notif.value;
+  client.publish(topic, msg);
+}
+//SAVE NOTIFICATION IN MONGO
 function saveNotifToMongo(incomingAlarm) {
   try {
     var newNotif = incomingAlarm;
@@ -111,7 +164,7 @@ function saveNotifToMongo(incomingAlarm) {
     console.log(error);
   }
 }
-
+//UPDATE ALARM COUNTER
 async function updateAlarmCounter(emqxRuleId) {
   try {
     await AlarmRule.update(
@@ -122,5 +175,9 @@ async function updateAlarmCounter(emqxRuleId) {
     console.log(error);
   }
 }
+
+setTimeout(() => {
+  startMqttClient();
+}, 3000);
 
 module.exports = router;
