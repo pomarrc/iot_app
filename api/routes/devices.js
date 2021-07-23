@@ -16,6 +16,7 @@ import { async } from "q";
 */
 import Device from "../models/device.js";
 import SaverRule from "../models/emqx_saver_rule.js";
+import Template from "../models/template.js";
 
 /*
                  
@@ -43,15 +44,21 @@ router.get("/device", checkAuth, async (req, res) => {
     var devices = await Device.find({ userId: userId });
     //desacople para poder modificar la consulta
     devices = JSON.parse(JSON.stringify(devices)); //pecado mortal
-    var devicess = Object.assign({}, devices); //metodo correcto
-
+    //var devicess = Object.assign({}, devices); //metodo correcto
     //get saver rules
-
     const saverRules = await getSaverRules(userId);
+
+    //get templates
+    const templates = await getTemplates(userId);
+
+    console.log(templates);
 
     devices.forEach((device, index) => {
       devices[index].saverRule = saverRules.filter(
         saverRule => saverRule.dId == device.dId
+      )[0];
+      devices[index].template = templates.filter(
+        template => template._id == device.templateId
       )[0];
     });
 
@@ -184,6 +191,15 @@ async function selectDevice(userId, dId) {
 
 module.exports = router;
 
+//GET TEMPLATES
+async function getTemplates(userId) {
+  try {
+    const templates = await Template.find({ userId: userId });
+    return templates;
+  } catch (error) {
+    return false;
+  }
+}
 /*
 SAVER RULES FUNCTIONS
 */
