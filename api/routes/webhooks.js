@@ -14,7 +14,7 @@ const colors = require("colors");
 import Data from "../models/data.js";
 import Device from "../models/device.js";
 import Notification from "../models/notifications";
-
+import AlarmRule from "../models/emqx_alarm_rule.js";
 /*
                  
    ##   #####  # 
@@ -62,8 +62,10 @@ router.post("/alarm-webhook", async (req, res) => {
       req.sendStatus(404);
       return;
     }
-
+    res.sendStatus(200); //solta a emqx
     const incomingAlarm = req.body;
+
+    updateAlarmCounter(incomingAlarm.emqxRuleId);
 
     const lastNotif = await Notification.find({
       dId: incomingAlarm.dId,
@@ -83,8 +85,6 @@ router.post("/alarm-webhook", async (req, res) => {
         saveNotifToMongo(incomingAlarm);
       }
     }
-
-    res.sendStatus(200);
   } catch (error) {
     console.log(error);
     res.sendStatus(200);
@@ -102,10 +102,25 @@ router.post("/alarm-webhook", async (req, res) => {
 */
 
 function saveNotifToMongo(incomingAlarm) {
-  var newNotif = incomingAlarm;
-  newNotif.time = Date.now();
-  newNotif.readed = false;
-  Notification.create(newNotif);
+  try {
+    var newNotif = incomingAlarm;
+    newNotif.time = Date.now();
+    newNotif.readed = false;
+    Notification.create(newNotif);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function updateAlarmCounter(emqxRuleId) {
+  try {
+    await AlarmRule.update(
+      { emqxRuleId: emqxRuleId },
+      { $inc: { counter: 1 } }
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = router;
