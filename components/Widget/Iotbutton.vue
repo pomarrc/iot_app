@@ -5,46 +5,53 @@
         {{ config.selectedDevice.name }}-{{ config.variableFullName }}
       </h4>
     </div>
-    <i                       
-      class="fa "           
+    <i
+      class="fa "
       :class="[config.icon, getIconColorClass()]"
       style="font-size:30px"
     ></i>
-    
-     <base-button @click="sendValue()" :type="config.class" class="mb-3 pull-right" size="lg">Add</base-button>
-    
+
+    <base-button
+      @click="sendValue()"
+      :type="config.class"
+      class="mb-3 pull-right"
+      size="lg"
+      >{{ config.text }}</base-button
+    >
   </card>
 </template>
 
 <script>
 export default {
-  props:['config'],
-  
+  props: ["config"],
+
   data() {
     return {
-      sending:false,
-     
+      sending: false
     };
   },
-  mounted() {
-   
-  },
+  mounted() {},
   methods: {
-   
-    sendValue(){
-        this.sending =true;
-        setTimeout(()=>{
-            this.sending =false;
-        },500)
-    
-        const toSend ={
-            topic: this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/actdata",
-            msg: {
-                value: this.config.message
-            }    
+    sendValue() {
+      this.sending = true;
+      setTimeout(() => {
+        this.sending = false;
+      }, 500);
+
+      const toSend = {
+        topic:
+          this.config.userId +
+          "/" +
+          this.config.selectedDevice.dId +
+          "/" +
+          this.config.variable +
+          "/actdata",
+        msg: {
+          value: this.config.message
         }
-        console.log(toSend)
-        this.$nuxt.$emit('mqtt-sender', toSend);
+      };
+      console.log(toSend);
+      this.$nuxt.$emit("mqtt-sender", toSend);
     },
 
     getIconColorClass() {

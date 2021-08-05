@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const { checkAuth } = require("../middlewares/authentication.js");
 const axios = require("axios");
 const colors = require("colors");
 var mqtt = require("mqtt");
+
 /*
 #     # ####### ######  ####### #        #####  
 ##   ## #     # #     # #       #       #     # 
@@ -18,10 +20,7 @@ import Notification from "../models/notifications";
 import AlarmRule from "../models/emqx_alarm_rule.js";
 
 var client;
-/*
-
-
-                 
+/*               
    ##   #####  # 
   #  #  #    # # 
  #    # #    # # 
@@ -97,6 +96,63 @@ router.post("/alarm-webhook", async (req, res) => {
     res.sendStatus(200);
   }
 });
+
+//nota van en otra ruta
+//GET NOTIFICATIONS
+router.get("/notifications", checkAuth, async (req, res) => {
+  try {
+    const userId = req.userData._id;
+
+    const notifications = await getNotifications(userId);
+    const toSend = {
+      status: "success",
+      data: notifications
+    };
+
+    res.json(toSend);
+  } catch (error) {
+    console.log("ERROR GETTING NOTIFICATIONS");
+    console.log(error);
+
+    const toSend = {
+      status: "error",
+      error: error
+    };
+
+    return res.status(500).json(toSend);
+  }
+});
+
+//UPDATE NOTIFICATION (readed status)
+router.put("/notifications", checkAuth, async (req, res) => {
+  try {
+    const userId = req.userData._id;
+
+    const notificationId = req.body.notifId;
+
+    await Notification.updateOne(
+      { userId: userId, _id: notificationId },
+      { readed: true }
+    );
+
+    const toSend = {
+      status: "success"
+    };
+
+    res.json(toSend);
+  } catch (error) {
+    console.log("ERROR UPDATING NOTIFICATION STATUS");
+    console.log(error);
+
+    const toSend = {
+      status: "error",
+      error: error
+    };
+
+    return res.status(500).json(toSend);
+  }
+});
+
 /*
                                                           
  ###### #    # #    #  ####  ##### #  ####  #    #  ####  
@@ -153,6 +209,16 @@ function sendMqttNotif(notif) {
     notif.value;
   client.publish(topic, msg);
 }
+//GET ALL NOT READED NOTIFICATIONS
+async function getNotifications(userId) {
+  try {
+    const res = await Notification.find({ userId: userId, readed: false });
+    return res;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
 //SAVE NOTIFICATION IN MONGO
 function saveNotifToMongo(incomingAlarm) {
   try {
@@ -167,7 +233,7 @@ function saveNotifToMongo(incomingAlarm) {
 //UPDATE ALARM COUNTER
 async function updateAlarmCounter(emqxRuleId) {
   try {
-    await AlarmRule.update(
+    await AlarmRule.updateOne(
       { emqxRuleId: emqxRuleId },
       { $inc: { counter: 1 } }
     );
@@ -175,7 +241,7 @@ async function updateAlarmCounter(emqxRuleId) {
     console.log(error);
   }
 }
-
+//MQTT
 setTimeout(() => {
   startMqttClient();
 }, 3000);

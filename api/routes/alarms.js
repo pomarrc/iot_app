@@ -162,12 +162,13 @@ async function createAlarmRule(newAlarm) {
     });
 
     const url = "http://localhost:8085/api/v4/rules/" + mongoRule.emqxRuleId;
-
     const payload_templ =
       '{"userId":"' +
       newAlarm.userId +
       '","dId":"' +
       newAlarm.dId +
+      '","deviceName":"' +
+      newAlarm.deviceName +
       '","payload":${payload},"topic":"${topic}","emqxRuleId":"' +
       mongoRule.emqxRuleId +
       '","value":' +
