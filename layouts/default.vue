@@ -4,8 +4,8 @@
 
     <side-bar
       :background-color="sidebarBackground"
-      short-title="Pt"
-      title="Polizeit"
+      short-title="GL"
+      title="IoTicos GL"
     >
       <template slot-scope="props" slot="links">
         <sidebar-item
@@ -89,6 +89,7 @@ import ContentFooter from "@/components/Layout/ContentFooter.vue";
 import DashboardContent from "@/components/Layout/Content.vue";
 import { SlideYDownTransition, ZoomCenterTransition } from "vue2-transitions";
 import mqtt from "mqtt";
+
 export default {
   components: {
     DashboardNavbar,
@@ -100,18 +101,9 @@ export default {
   },
   data() {
     return {
-      sidebarBackground: "vue", //vue|blue|orange|green|red|primary
-      client: null
-    };
-  },
-  computed: {
-    isFullScreenRoute() {
-      return this.$route.path === "/maps/full-screen";
-    }
-  },
-  methods: {
-    startMqttClient() {
-      const options = {
+      sidebarBackground: "primary", //vue|blue|orange|green|red|primary
+      client: null,
+      options: {
         host: "localhost",
         port: 8083,
         endpoint: "/mqtt",
@@ -125,9 +117,78 @@ export default {
           this.$store.state.auth.userData.name +
           "_" +
           Math.floor(Math.random() * 1000000 + 1),
-        username: "superuser",
-        password: "superuser"
-      };
+        username: "",
+        password: ""
+      }
+    };
+  },
+  computed: {
+    isFullScreenRoute() {
+      return this.$route.path === "/maps/full-screen";
+    }
+  },
+  mounted() {
+    this.$store.dispatch("getNotifications");
+    this.initScrollbar();
+
+    setTimeout(() => {
+      this.startMqttClient();
+    }, 2000);
+  },
+  beforeDestroy() {
+    this.$nuxt.$off("mqtt-sender");
+  },
+  methods: {
+    async getMqttCredentials() {
+      try {
+        const axiosHeaders = {
+          headers: {
+            token: this.$store.state.auth.token
+          }
+        };
+
+        const credentials = await this.$axios.post(
+          "/getmqttcredentials",
+          null,
+          axiosHeaders
+        );
+        console.log(credentials.data);
+
+        if (credentials.data.status == "success") {
+          this.options.username = credentials.data.username;
+          this.options.password = credentials.data.password;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async getMqttCredentialsForReconnection() {
+      try {
+        const axiosHeaders = {
+          headers: {
+            token: this.$store.state.auth.token
+          }
+        };
+
+        const credentials = await this.$axios.post(
+          "/getmqttcredentialsforreconnection",
+          null,
+          axiosHeaders
+        );
+        console.log(credentials.data);
+
+        if (credentials.data.status == "success") {
+          this.client.options.username = credentials.data.username;
+          this.client.options.password = credentials.data.password;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async startMqttClient() {
+      await this.getMqttCredentials();
 
       //ex topic: "userid/did/variableId/sdata"
       const deviceSubscribeTopic =
@@ -136,16 +197,22 @@ export default {
         this.$store.state.auth.userData._id + "/+/+/notif";
 
       const connectUrl =
-        "ws://" + options.host + ":" + options.port + options.endpoint;
+        "ws://" +
+        this.options.host +
+        ":" +
+        this.options.port +
+        this.options.endpoint;
 
       try {
-        this.client = mqtt.connect(connectUrl, options);
+        this.client = mqtt.connect(connectUrl, this.options);
       } catch (error) {
         console.log(error);
       }
 
       //MQTT CONNECTION SUCCESS
       this.client.on("connect", () => {
+        console.log(this.client);
+
         console.log("Connection succeeded!");
 
         //SDATA SUBSCRIBE
@@ -175,6 +242,11 @@ export default {
 
       this.client.on("reconnect", error => {
         console.log("reconnecting:", error);
+        this.getMqttCredentialsForReconnection();
+      });
+
+      this.client.on("disconnect", error => {
+        console.log("MQTT disconnect EVENT FIRED:", error);
       });
 
       this.client.on("message", (topic, message) => {
@@ -206,6 +278,7 @@ export default {
         this.client.publish(toSend.topic, JSON.stringify(toSend.msg));
       });
     },
+
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {
         this.$sidebar.displaySidebar(false);
@@ -225,15 +298,9 @@ export default {
         docClasses.add("perfect-scrollbar-off");
       }
     }
-  },
-  mounted() {
-    this.initScrollbar();
-    this.startMqttClient();
-    this.$store.dispatch("getNotifications");
   }
 };
 </script>
-
 <style lang="scss">
 $scaleSize: 0.95;
 @keyframes zoomIn95 {
