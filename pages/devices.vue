@@ -1,7 +1,8 @@
 <template>
   <div>
-    <!-- FROM ADD DEVICE-->
+    <!-- FORM ADD DEVICE -->
     <div class="row">
+      <!-- <Json :value="$store.state.selectedDevice"></Json> -->
       <card>
         <div slot="header">
           <h4 class="card-title">Add new Device</h4>
@@ -12,22 +13,25 @@
             <base-input
               label="Device Name"
               type="text"
-              placeholder="Ex:Home, Office..."
+              placeholder="Ex: Home, Office..."
               v-model="newDevice.name"
-            ></base-input>
+            >
+            </base-input>
           </div>
+
           <div class="col-4">
             <base-input
               label="Device Id"
               type="text"
-              placeholder="Ex:777, 999..."
+              placeholder="Ex: 7777-8888"
               v-model="newDevice.dId"
-            ></base-input>
+            >
+            </base-input>
           </div>
 
           <div class="col-4">
             <slot name="label">
-              <label>Template </label>
+              <label> Template </label>
             </slot>
 
             <el-select
@@ -51,7 +55,7 @@
           <div class="col-12">
             <base-button
               @click="createNewDevice()"
-              type="blue"
+              type="primary"
               class="mb-3"
               size="lg"
               >Add</base-button
@@ -60,29 +64,38 @@
         </div>
       </card>
     </div>
-    <!-- DEVICE TABLE -->
+
+    <!-- DEVICES TABLE -->
     <div class="row">
       <card>
         <div slot="header">
           <h4 class="card-title">Devices</h4>
         </div>
+
         <el-table :data="$store.state.devices">
           <el-table-column label="#" min-width="50" align="center">
-            <div slot-scope="{ $index }">
+            <div slot-scope="{ row, $index }">
               {{ $index + 1 }}
             </div>
           </el-table-column>
 
           <el-table-column prop="name" label="Name"></el-table-column>
+
           <el-table-column prop="dId" label="Device Id"></el-table-column>
+
+          <el-table-column prop="password" label="Password"></el-table-column>
+
           <el-table-column
             prop="templateName"
             label="Template"
           ></el-table-column>
 
-          <el-table-column label="Action">
+          <el-table-column label="Actions">
             <div slot-scope="{ row, $index }">
-              <el-tooltip content="saver status" style="margin-right:10px">
+              <el-tooltip
+                content="Saver Status Indicator"
+                style="margin-right:10px"
+              >
                 <i
                   class="fas fa-database "
                   :class="{
@@ -96,12 +109,12 @@
                 <base-switch
                   @click="updateSaverRuleStatus(row.saverRule)"
                   :value="row.saverRule.status"
-                  type="blue"
+                  type="primary"
                   on-text="On"
                   off-text="Off"
                 ></base-switch>
               </el-tooltip>
-              <!-- BOTTON DELETE -->
+
               <el-tooltip
                 content="Delete"
                 effect="light"
@@ -115,7 +128,7 @@
                   class="btn-link"
                   @click="deleteDevice(row)"
                 >
-                  <i class="tim-icons icon-simple-remove"></i>
+                  <i class="tim-icons icon-simple-remove "></i>
                 </base-button>
               </el-tooltip>
             </div>
@@ -123,14 +136,15 @@
         </el-table>
       </card>
     </div>
-
-    <json :value="$store.state.devices"> </json>
+    <!-- <Json :value="$store.state.selectedDevice"></Json>
+    <Json :value="$store.state.devices"></Json> -->
   </div>
 </template>
 
 <script>
 import { Table, TableColumn } from "element-ui";
 import { Select, Option } from "element-ui";
+
 export default {
   middleware: "authenticated",
   components: {
@@ -152,11 +166,85 @@ export default {
     };
   },
   mounted() {
-    //this.$store.dispatch("getDevices");
     this.getTemplates();
   },
-
   methods: {
+    updateSaverRuleStatus(rule) {
+      var ruleCopy = JSON.parse(JSON.stringify(rule));
+
+      ruleCopy.status = !ruleCopy.status;
+
+      const toSend = {
+        rule: ruleCopy
+      };
+
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.token
+        }
+      };
+
+      this.$axios
+        .put("/saver-rule", toSend, axiosHeaders)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$store.dispatch("getDevices");
+
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: " Device Saver Status Updated"
+            });
+          }
+
+          return;
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error updating saver rule status"
+          });
+          return;
+        });
+    },
+
+    deleteDevice(device) {
+      const axiosHeaders = {
+        headers: {
+          token: this.$store.state.auth.accessToken
+        },
+        params: {
+          dId: device.dId
+        }
+      };
+
+      this.$axios
+        .delete("/device", axiosHeaders)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: device.name + " deleted!"
+            });
+          }
+
+          $nuxt.$emit("time-to-get-devices");
+
+          return;
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error deleting " + device.name
+          });
+          return;
+        });
+    },
     //new device
     createNewDevice() {
       if (this.newDevice.name == "") {
@@ -241,7 +329,8 @@ export default {
           }
         });
     },
-    //get template
+
+    //Get Templates
     async getTemplates() {
       const axiosHeaders = {
         headers: {
@@ -266,6 +355,7 @@ export default {
         return;
       }
     },
+
     deleteDevice(device) {
       const axiosHeader = {
         headers: {
@@ -295,47 +385,6 @@ export default {
             icon: "tim-icons icon-alert-circle-exc",
             message: " Error deleting " + device.name
           });
-        });
-    },
-
-    updateSaverRuleStatus(rule) {
-      var ruleCopy = JSON.parse(JSON.stringify(rule));
-
-      ruleCopy.status = !ruleCopy.status;
-
-      const toSend = {
-        rule: ruleCopy
-      };
-
-      const axiosHeaders = {
-        headers: {
-          token: this.$store.state.auth.token
-        }
-      };
-
-      this.$axios
-        .put("/saver-rule", toSend, axiosHeaders)
-        .then(res => {
-          if (res.data.status == "success") {
-            this.$store.dispatch("getDevices");
-
-            this.$notify({
-              type: "success",
-              icon: "tim-icons icon-check-2",
-              message: " Device Saver Status Updated"
-            });
-          }
-
-          return;
-        })
-        .catch(e => {
-          console.log(e);
-          this.$notify({
-            type: "danger",
-            icon: "tim-icons icon-alert-circle-exc",
-            message: " Error updating saver rule status"
-          });
-          return;
         });
     }
   }
