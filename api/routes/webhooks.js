@@ -18,6 +18,7 @@ import Data from "../models/data.js";
 import Device from "../models/device.js";
 import Notification from "../models/notifications";
 import AlarmRule from "../models/emqx_alarm_rule.js";
+import Template from "../models/template.js";
 
 var client;
 /*               
@@ -29,6 +30,63 @@ var client;
  #    # #      # 
                  
 */
+
+//DEVICE CREDENTIALS WEBHOOK
+router.post("/getdevicecredentials", async (req, res) => {
+  console.log(req.body);
+
+  const dId = req.body.dId;
+
+  const password = req.body.password;
+
+  const device = await Device.findOne({ dId: dId });
+
+  if (password != device.password) {
+    return res.status(401).json(); //cambiar el tipo de respuesta en produccion
+  }
+
+  const userId = device.userId;
+
+  var credentials = await getDeviceMqttCredentials(dId, userId);
+
+  var template = await Template.findOne({ _id: device.templateId });
+
+  console.log(template);
+
+  var variables = [];
+
+  template.widgets.forEach(widget => {
+    var v = (({
+      variable,
+      variableFullName,
+      variableType,
+      variableSendFreq
+    }) => ({
+      variable,
+      variableFullName,
+      variableType,
+      variableSendFreq
+    }))(widget);
+
+    variables.push(v);
+  });
+
+  const toSend = {
+    username: credentials.username,
+    password: credentials.password,
+    topic: userId + "/" + dId + "/",
+    variables: variables
+  };
+
+  console.log(toSend);
+
+  res.json(toSend);
+
+  setTimeout(() => {
+    getDeviceMqttCredentials(dId, userId);
+    console.log("Device Credentials Updated");
+  }, 10000);
+});
 //SAVER WEBHOOK
 router.post("/saver-webhook", async (req, res) => {
   if (req.headers.token != "121212") {
@@ -163,6 +221,68 @@ router.put("/notifications", checkAuth, async (req, res) => {
  #       ####  #    #  ####    #   #  ####  #    #  ####  
                                                           
 */
+
+//DEVICE CREDENTIALS
+async function getDeviceMqttCredentials(dId, userId) {
+  try {
+    var rule = await EmqxAuthRule.find({
+      type: "device",
+      userId: userId,
+      dId: dId
+    });
+
+    if (rule.length == 0) {
+      const newRule = {
+        userId: userId,
+        username: makeid(10),
+        password: makeid(10),
+        publish: [userId + "/" + dId + "/+/sdata"],
+        subscribe: [userId + "/" + dId + "/+/actdata"],
+        type: "device",
+        time: Date.now(),
+        updatedTime: Date.now()
+      };
+
+      const result = await EmqxAuthRule.create(newRule);
+
+      const toReturn = {
+        username: result.username,
+        password: result.password
+      };
+
+      return toReturn;
+    }
+
+    const newUserName = makeid(10);
+    const newPassword = makeid(10);
+
+    const result = await EmqxAuthRule.updateOne(
+      { type: "device", dId: dId },
+      {
+        $set: {
+          username: newUserName,
+          password: newPassword,
+          updatedTime: Date.now()
+        }
+      }
+    );
+
+    // update response example
+    //{ n: 1, nModified: 1, ok: 1 }
+
+    if (result.n == 1 && result.ok == 1) {
+      return {
+        username: newUserName,
+        password: newPassword
+      };
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
 //CONNECT CLIENT MQTT
 function startMqttClient() {
   const options = {
