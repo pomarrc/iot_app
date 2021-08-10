@@ -77,6 +77,14 @@
               <br />
 
               <base-input
+                v-model.number="ncConfig.variableSendFreq"
+                label="Send Freq"
+                type="number"
+              ></base-input>
+
+              <br />
+
+              <base-input
                 v-model.number="ncConfig.chartTimeAgo"
                 label="Chart Back Time (mins)"
                 type="number"
@@ -422,6 +430,14 @@
 
               <br />
 
+              <base-input
+                v-model="iotIndicatorConfig.variableSendFreq"
+                label="Send Freq"
+                type="text"
+              ></base-input>
+
+              <br />
+
               <el-select
                 v-model="iotIndicatorConfig.class"
                 class="select-success"
@@ -720,6 +736,8 @@ export default {
         },
         variableFullName: "temperature",
         variable: "varname",
+        variableType: "input",
+        variableSendFreq: "30",
         unit: "Watts",
         class: "success",
         column: "col-12",
@@ -738,23 +756,9 @@ export default {
         },
         variableFullName: "Luz",
         variable: "varname",
+        variableType: "output",
         class: "danger",
         widget: "switch",
-        icon: "fa-bath",
-        column: "col-6"
-      },
-
-      configButton: {
-        userId: "userid",
-        selectedDevice: {
-          name: "Home",
-          dId: "8888"
-        },
-        variableFullName: "temperature",
-        text: "send",
-        message: "testing123",
-        variable: "varname",
-        widget: "button",
         icon: "fa-bath",
         column: "col-6"
       },
@@ -767,11 +771,29 @@ export default {
         },
         variableFullName: "temperature",
         variable: "varname",
+        variableType: "input",
+        variableSendFreq: "30",
         class: "success",
         widget: "indicator",
         icon: "fa-bath",
         column: "col-6"
       },
+
+      //  configButton: {
+      //    userId: "userid",
+      //    selectedDevice: {
+      //      name: "Home",
+      //      dId: "8888"
+      //    },
+      //    variableFullName: "temperature",
+      //    variableType: "output",
+      //    text: "send",
+      //    message: "testing123",
+      //    variable: "varname",
+      //    widget: "button",
+      //    icon: "fa-bath",
+      //    column: "col-6"
+      //  },
 
       configButton: {
         userId: "userid",
@@ -784,6 +806,7 @@ export default {
         },
         variableFullName: "Pump",
         variable: "var1",
+        variableType: "output",
         icon: "fa-sun",
         column: "col-4",
         widget: "button",
