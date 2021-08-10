@@ -2,63 +2,80 @@
   <card>
     <div slot="header">
       <h4 class="card-title">
-        {{ config.selectedDevice.name }}-{{ config.variableFullName }}
+        {{ config.selectedDevice.name }} - {{ config.variableFullName }}
       </h4>
     </div>
-    <i                       
-      class="fa "           
+
+    <i
+      class="fa "
       :class="[config.icon, getIconColorClass()]"
-      style="font-size:30px"
+      style="font-size: 30px"
     ></i>
   </card>
 </template>
 
 <script>
 export default {
-  props:['config'],
-  
+  props: ["config"],
   data() {
     return {
-      value: false
-     /* config: {
-        userId: "userid",
-        selectedDevice: {
-          name: "Office",
-          dId: "3458",
-          templateName: "Power Camera",
-          templateId: "232gdfgdfgiy232334sdd",
-          saverRule: true
-        },
-        variableFullName: "Pump",
-        variable: "uniquestr",
-        icon: "fa-sun",
-        column: "col-6",
-        widget: "indicator",
-        class: "success"
-      }*/
+      value: false,
+      topic: "",
+      props: ["config"]
     };
   },
-  mounted() {
-    //userId/dId/uniquestr/sdata
-    const topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata";
-    console.log(topic);
-    this.$nuxt.$on(topic, this.processReceivedData)//sistema de mensajeria de nuxt para recibir
+  watch: {
+    config: {
+      immediate: true,
+      deep: true,
+      handler() {
+        setTimeout(() => {
+          this.value = false;
+
+          this.$nuxt.$off(this.topic);
+
+          //userId/dId/uniquestr/sdata
+          const topic =
+            this.config.userId +
+            "/" +
+            this.config.selectedDevice.dId +
+            "/" +
+            this.config.variable +
+            "/sdata";
+          this.$nuxt.$on(topic, this.processReceivedData);
+        }, 300);
+      }
+    }
   },
-  beforeDestroy(){
-    this.$nuxt.$off(this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata")//para evitar en comportamiento se 
-                                                                                                                      //suscripcion multiple
+  mounted() {
+    const topic =
+      this.config.userId +
+      "/" +
+      this.config.selectedDevice.dId +
+      "/" +
+      this.config.variable +
+      "/sdata";
+    this.$nuxt.$on(topic, this.processReceivedData);
+  },
+  beforeDestroy() {
+    this.$nuxt.$off(this.topic);
   },
   methods: {
     processReceivedData(data) {
-      console.log("received");
-      console.log(data);
-      this.value = data.value;
+      try {
+        console.log("received");
+        console.log(data);
+        this.value = data.value;
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     getIconColorClass() {
       if (!this.value) {
         return "text-dark";
       }
+
       if (this.config.class == "success") {
         return "text-success";
       }

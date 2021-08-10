@@ -254,7 +254,6 @@ router.put("/notifications", checkAuth, async (req, res) => {
                                                           
 */
 
-//DEVICE CREDENTIALS
 async function getDeviceMqttCredentials(dId, userId) {
   try {
     var rule = await EmqxAuthRule.find({
@@ -266,6 +265,7 @@ async function getDeviceMqttCredentials(dId, userId) {
     if (rule.length == 0) {
       const newRule = {
         userId: userId,
+        dId: dId,
         username: makeid(10),
         password: makeid(10),
         publish: [userId + "/" + dId + "/+/sdata"],

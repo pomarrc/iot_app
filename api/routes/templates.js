@@ -1,110 +1,105 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { checkAuth } = require('../middlewares/authentication.js');
+const { checkAuth } = require("../middlewares/authentication.js");
 
 //models import
-import Template from '../models/template.js';
+import Template from "../models/template.js";
+import Device from "../models/device.js";
 
 //get templates
-router.get('/template', checkAuth, async (req, res) => {
+router.get("/template", checkAuth, async (req, res) => {
+  try {
+    const userId = req.userData._id;
 
-    try {
+    const templates = await Template.find({ userId: userId });
 
-        const userId = req.userData._id;
+    console.log(userId);
+    console.log(templates);
 
-        const templates = await Template.find({userId: userId});
+    const response = {
+      status: "success",
+      data: templates
+    };
 
-        console.log(userId);
-        console.log(templates)
+    return res.json(response);
+  } catch (error) {
+    console.log(error);
 
-        const response = {
-            status: "success",
-            data: templates
-        }
+    const response = {
+      status: "error",
+      error: error
+    };
 
-        return res.json(response);
-
-    } catch (error) {
-
-        console.log(error);
-
-        const response = {
-            status: "error",
-            error: error
-        }
-
-        return res.status(500).json(response);
-
-    }
-
+    return res.status(500).json(response);
+  }
 });
-//create templates
-router.post('/template', checkAuth, async (req, res) => {
 
-    try {
+//create template
+router.post("/template", checkAuth, async (req, res) => {
+  try {
+    const userId = req.userData._id;
 
-        const userId = req.userData._id;//userid que rescate del token
+    var newTemplate = req.body.template;
 
-        var newTemplate = req.body.template;
+    newTemplate.userId = userId;
+    newTemplate.createdTime = Date.now();
 
-        newTemplate.userId = userId;
-        newTemplate.createdTime = Date.now();
+    const r = await Template.create(newTemplate);
 
-        const r = await Template.create(newTemplate);
+    const response = {
+      status: "success"
+    };
 
-        const response = {
-            status: "success",
-        }
+    return res.json(response);
+  } catch (error) {
+    console.log(error);
 
-        return res.json(response)
+    const response = {
+      status: "error",
+      error: error
+    };
 
-    } catch (error) {
-
-        console.log(error);
-
-        const response = {
-            status: "error",
-            error: error
-        }
-
-        return res.status(500).json(response);
-
-    }
-
+    return res.status(500).json(response);
+  }
 });
 
 //delete template
-router.delete('/template', checkAuth, async (req, res) => {
+router.delete("/template", checkAuth, async (req, res) => {
+  try {
+    const userId = req.userData._id;
+    const templateId = req.query.templateId;
 
-    try {
+    const devices = await Device.find({
+      userId: userId,
+      templateId: templateId
+    });
 
-        const userId = req.userData._id;
-        const templateId = req.query.templateId;
+    if (devices.length > 0) {
+      const response = {
+        status: "fail",
+        error: "template in use"
+      };
 
-        const r = await Template.deleteOne({userId: userId, _id: templateId});
-
-        const response = {
-            status: "success",
-        }
-
-        return res.json(response)
-
-    } catch (error) {
-
-        console.log(error);
-
-        const response = {
-            status: "error",
-            error: error
-        }
-
-        return res.status(500).json(response);
-
+      return res.json(response);
     }
 
+    const r = await Template.deleteOne({ userId: userId, _id: templateId });
+
+    const response = {
+      status: "success"
+    };
+
+    return res.json(response);
+  } catch (error) {
+    console.log(error);
+
+    const response = {
+      status: "error",
+      error: error
+    };
+
+    return res.status(500).json(response);
+  }
 });
-
-
-
 
 module.exports = router;

@@ -121,7 +121,9 @@ export default {
       handler() {
         setTimeout(() => {
           this.value = 0;
-          this.$nuxt.$off(this.topic + "/sdata", this.procesReceivedData);
+
+          this.$nuxt.$off(this.topic + "/sdata");
+
           this.topic =
             this.config.userId +
             "/" +
@@ -129,8 +131,11 @@ export default {
             "/" +
             this.config.variable;
           this.$nuxt.$on(this.topic + "/sdata", this.procesReceivedData);
+
           this.chartOptions.series[0].data = [];
+
           this.getChartData();
+
           this.chartOptions.series[0].name =
             this.config.variableFullName + " " + this.config.unit;
           this.updateColorClass();
@@ -140,15 +145,11 @@ export default {
     }
   },
   mounted() {
-    //this.topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable;
-    //this.$nuxt.$on(this.topic + "/sdata", this.procesReceivedData);
-
     this.getNow();
-
     this.updateColorClass();
   },
   beforeDestroy() {
-    this.$nuxt.$off(this.topic + "/sdata", this.procesReceivedData);
+    this.$nuxt.$off(this.topic + "/sdata");
   },
   methods: {
     updateColorClass() {
@@ -240,14 +241,18 @@ export default {
     },
 
     procesReceivedData(data) {
-      this.time = Date.now();
-      this.value = data.value;
+      try {
+        this.time = Date.now();
+        this.value = data.value;
 
-      setTimeout(() => {
-        if (data.save == 1) {
-          this.getChartData();
-        }
-      }, 1000);
+        setTimeout(() => {
+          if (data.save == 1) {
+            this.getChartData();
+          }
+        }, 1000);
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     getNow() {
