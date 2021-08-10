@@ -16,6 +16,7 @@ var mqtt = require("mqtt");
 */
 import Data from "../models/data.js";
 import Device from "../models/device.js";
+import EmqxAuthRule from "../models/emqx_auth.js";
 import Notification from "../models/notifications";
 import AlarmRule from "../models/emqx_alarm_rule.js";
 import Template from "../models/template.js";
