@@ -41,6 +41,7 @@ export default {
       time: Date.now(),
       nowTime: Date.now(),
       isMounted: false,
+      topic: "",
 
       chartOptions: {
         credits: {
@@ -119,39 +120,35 @@ export default {
       deep: true,
       handler() {
         setTimeout(() => {
+          this.value = 0;
+          this.$nuxt.$off(this.topic + "/sdata", this.procesReceivedData);
+          this.topic =
+            this.config.userId +
+            "/" +
+            this.config.selectedDevice.dId +
+            "/" +
+            this.config.variable;
+          this.$nuxt.$on(this.topic + "/sdata", this.procesReceivedData);
+          this.chartOptions.series[0].data = [];
+          this.getChartData();
           this.chartOptions.series[0].name =
             this.config.variableFullName + " " + this.config.unit;
           this.updateColorClass();
           window.dispatchEvent(new Event("resize"));
-        }, 1000);
+        }, 300);
       }
     }
   },
   mounted() {
-    this.$nuxt.$on(
-      this.config.userId +
-        "/" +
-        this.config.selectedDevice.dId +
-        "/" +
-        this.config.variable +
-        "/sdata",
-      this.procesReceivedData
-    );
+    //this.topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable;
+    //this.$nuxt.$on(this.topic + "/sdata", this.procesReceivedData);
 
     this.getNow();
-    this.getChartData();
+
     this.updateColorClass();
   },
   beforeDestroy() {
-    this.$nuxt.$off(
-      this.config.userId +
-        "/" +
-        this.config.selectedDevice.dId +
-        "/" +
-        this.config.variable +
-        "/sdata",
-      this.procesReceivedData
-    );
+    this.$nuxt.$off(this.topic + "/sdata", this.procesReceivedData);
   },
   methods: {
     updateColorClass() {
