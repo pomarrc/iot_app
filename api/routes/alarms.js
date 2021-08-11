@@ -198,7 +198,7 @@ async function createAlarmRule(newAlarm) {
   //agregar try catch
 }
 
-//UPDATE ALARM STATUS
+//c UPDATE ALARM STATUS
 async function updateAlarmRuleStatus(emqxRuleId, status) {
   const url =
     "http://" + process.env.EMQX_NODE_HOST + ":8085/api/v4/rules/" + emqxRuleId;
