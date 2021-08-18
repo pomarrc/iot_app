@@ -37,7 +37,7 @@
             <el-select
               v-model="selectedIndexTemplate"
               placeholder="Select Template"
-              class="select-primary"
+              class="select-blue"
               style="width:100%"
             >
               <el-option
@@ -55,7 +55,7 @@
           <div class="col-12">
             <base-button
               @click="createNewDevice()"
-              type="primary"
+              type="default"
               class="mb-3"
               size="lg"
               >Add</base-button

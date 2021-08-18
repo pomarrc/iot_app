@@ -71,7 +71,7 @@
               <base-button
                 @click="createNewRule()"
                 native-type="submit"
-                type="primary"
+                type="default"
                 class="mb-3"
                 size="lg"
                 :disabled="$store.state.devices.length == 0"
