@@ -4,7 +4,7 @@
       <card class="card-login card-white">
         <template slot="header">
           <img src="img//card-info.png" alt="" />
-          <h1 class="card-title">IoT GL</h1>
+          <h1 class="card-title">IoT</h1>
         </template>
 
         <div>
@@ -55,7 +55,7 @@
           </div>
 
           <div class="pull-right">
-            <h6><a href="#help!!!" class="link footer-link">Need Help?</a></h6>
+            <!-- <h6><a href="#help!!!" class="link footer-link">Need Help?</a></h6> -->
           </div>
         </div>
       </card>
@@ -63,9 +63,9 @@
   </div>
 </template>
 <script>
-import { Message } from 'element-ui';
+import { Message } from "element-ui";
 export default {
-   middleware: 'notAuthenticated',
+  middleware: "notAuthenticated",
   layout: "auth",
   data() {
     return {
@@ -77,45 +77,41 @@ export default {
     };
   },
   methods: {
-    register(){
-      this.$axios.post("/register", this.user)
-      .then((res) => {
-        if(res.data.status == "success"){
-           this.$notify({
-          type: "success",
-          icon: "tim-icons icon-check-2",
-          message: "Success! Now you can login..."
+    register() {
+      this.$axios
+        .post("/register", this.user)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: "Success! Now you can login..."
+            });
+
+            this.user.name = "";
+            this.user.password = "";
+            this.user.email = "";
+            return;
+          }
+        })
+        .catch(e => {
+          console.log(e.response.data);
+          if (e.response.data.error.errors.email.kind == "unique") {
+            this.$notify({
+              type: "danger",
+              icon: "tim-icons icon-alert-circle-ext",
+              message: "User already exists :("
+            });
+            return;
+          } else {
+            this.$notify({
+              type: "danger",
+              icon: "tim-icons icon-alert-circle-ext",
+              message: "Error creating user"
+            });
+            return;
+          }
         });
-       
-        this.user.name ="";
-        this.user.password ="";
-        this.user.email ="";
-         return;
-        }
-       
-      
-      
-      })
-      .catch((e)=>{
-        console.log(e.response.data);
-        if(e.response.data.error.errors.email.kind == "unique"){
-           this.$notify({
-          type: "danger",
-          icon: "tim-icons icon-alert-circle-ext",
-          message: "User already exists :("
-        });
-        return; 
-        }else{
-           this.$notify({
-          type: "danger",
-          icon: "tim-icons icon-alert-circle-ext",
-          message: "Error creating user"
-        });
-        return;
-        }
-      });
-    
-    
     }
   }
 };

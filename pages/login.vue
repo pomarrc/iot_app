@@ -4,10 +4,10 @@
       <card class="card-login card-white">
         <template slot="header">
           <img src="img//card-info.png" alt="" />
-          <h1 class="card-title">IoT GL  </h1>
+          <h1 class="card-title">IoT</h1>
         </template>
 
-        <div> 
+        <div>
           <base-input
             name="email"
             v-model="user.email"
@@ -47,7 +47,7 @@
 
           <div class="pull-right">
             <h6>
-              <a href="#help!!!" class="link footer-link-blue">Need Help?</a>
+              <!-- <a href="#help!!!" class="link footer-link-blue">Need Help?</a> -->
             </h6>
           </div>
         </div>
@@ -59,7 +59,7 @@
 <script>
 const Cookie = process.client ? require("js-cookie") : undefined;
 export default {
-  middleware: 'notAuthenticated',
+  middleware: "notAuthenticated",
   name: "login-page",
   layout: "auth",
   data() {
@@ -70,10 +70,7 @@ export default {
       }
     };
   },
-  mounted(){
-    
-
-  },
+  mounted() {},
   methods: {
     login() {
       this.$axios
@@ -89,12 +86,12 @@ export default {
             const auth = {
               token: res.data.token,
               userData: res.data.userData
-            }
+            };
             //token para acceso global con estados en tienda
-            this.$store.commit('setAuth',auth);
+            this.$store.commit("setAuth", auth);
             //guardamos el token en local storage
-            localStorage.setItem('auth',JSON.stringify(auth));
-            $nuxt.$router.push('/dashboard');
+            localStorage.setItem("auth", JSON.stringify(auth));
+            $nuxt.$router.push("/dashboard");
             return;
           }
         })
