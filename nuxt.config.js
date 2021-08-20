@@ -1,3 +1,6 @@
+import path from 'path'
+import fs from 'fs'
+
 export default {
   ssr: false,
   /*
@@ -71,9 +74,13 @@ export default {
     mqtt_port: process.env.MQTT_PORT
   },
   server: {
-    port: 3000, //default: 3000
-    host: "0.0.0.0" //default: localhost
-  },
+    port:  process.env.APP_PORT, //default: 3000
+    host: "0.0.0.0", //default: localhost
+    https: {
+      key: fs.readFileSync('./server.key'),
+      cert: fs.readFileSync('./server.crt')
+    }
+},
   //para arrancar nuxt y api
   serverMiddleware: {
     "/api": "~/api"
