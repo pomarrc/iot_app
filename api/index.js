@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const colors = require("colors");
+const { fstat } = require("fs");
 require("dotenv").config();
 
 //instances
@@ -30,21 +31,29 @@ app.use("/api", require("./routes/dataprovider.js"));
 
 module.exports = app;
 
-//listener
-app.listen(process.env.API_PORT, () => {
-  console.log("API server listening on port " + process.env.API_PORT);
-});
+//listener https
+https
+  .createServer(
+    {
+      cert: fs.readFileSync("server.crt"),
+      key: fs.readFileSync("server.key")
+    },
+    app
+  )
+  .listen(process.env.API_PORT, () => {
+    console.log("API server https listening on port " + process.env.API_PORT);
+  });
 
-if(process.env.environment != "dev"){
+if (process.env.environment != "dev") {
   const app2 = express();
 
-  app2.listen(3002, function(){
+  app2.listen(3002, function() {
     console.log("Listening on port 3002 ");
   });
 
-  app2.all('*',function(req, res){
+  app2.all("*", function(req, res) {
     console.log("NO SSL ACCESS .. REDIRECTING...");
-    return res.redirect("https://"+ req.headers["host"] + req.url);
+    return res.redirect("https://" + req.headers["host"] + req.url);
   });
 }
 

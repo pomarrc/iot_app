@@ -1,8 +1,8 @@
 {
-  "name": "iot_gl_app",
+  "name": "omarrc_app",
   "version": "1.0.0",
-  "description": "IOT_GL_APP",
-  "author": "IoTicos.org",
+  "description": "omarrc_app",
+  "author": "omarrc",
   "scripts": {
     "dev": "nuxt",
     "devn": "nodemon api/index.js --exec babel-node",
@@ -25,7 +25,9 @@
     "element-ui": "^2.14.1",
     "es6-promise": "^4.1.1",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "fuse.js": "^3.2.0",
+    "https": "^1.0.0",
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.15",
