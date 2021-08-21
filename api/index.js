@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const colors = require("colors");
-const { fstat } = require("fs");
+const fs = require("fs");
+const https = require("https");
 require("dotenv").config();
 
 //instances
@@ -35,8 +36,8 @@ module.exports = app;
 https
   .createServer(
     {
-      cert: fs.readFileSync("server.crt"),
-      key: fs.readFileSync("server.key")
+      cert: fs.readFileSync("./api/server.crt"),
+      key: fs.readFileSync("./api/server.key")
     },
     app
   )
