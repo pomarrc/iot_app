@@ -18,7 +18,7 @@ export default {
       }
     ],
     link: [
-      { rel: "icon", type: "image/x-icon", href: "/favicon.png" },
+      { rel: "icon", type: "image/x-icon", href: "/favicon2.png" },
       {
         rel: "stylesheet",
         href:
@@ -75,12 +75,13 @@ export default {
   },
   server: {
     port: process.env.APP_PORT, //default: 3000
-    host: "0.0.0.0", //default: localhost
-    https: {
-      key: fs.readFileSync("./server.key"),
-      cert: fs.readFileSync("./server.crt"),
-      ca: fs.readFileSync("./ca.crt")
-    }
+    host: "0.0.0.0" //default: localhost
+    //activar en produccion
+    // https: {
+    //   key: fs.readFileSync("./server.key"),
+    //   cert: fs.readFileSync("./server.crt"),
+    //   ca: fs.readFileSync("./ca.crt")
+    // }
   },
   //para arrancar nuxt y api
   serverMiddleware: {

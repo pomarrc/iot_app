@@ -39,7 +39,7 @@ export default {
     },
     logo: {
       type: String,
-      default: "img/iconbar.png",
+      default: "img/iconbar0.png",
       description: "Sidebar app logo"
     },
     backgroundColor: {

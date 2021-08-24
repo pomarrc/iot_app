@@ -33,18 +33,26 @@ app.use("/api", require("./routes/dataprovider.js"));
 module.exports = app;
 
 //listener https
-https
-  .createServer(
-    {
-      cert: fs.readFileSync("server.crt"),
-      key: fs.readFileSync("server.key"),
-      ca: fs.readFileSync("ca.crt")
-    },
-    app
-  )
-  .listen(process.env.API_PORT, () => {
-    console.log("API server https listening on port " + process.env.API_PORT);
+if (process.env.environment == "prod") {
+  https
+    .createServer(
+      {
+        cert: fs.readFileSync("server.crt"),
+        key: fs.readFileSync("server.key"),
+        ca: fs.readFileSync("ca.crt")
+      },
+      app
+    )
+    .listen(process.env.API_PORT, () => {
+      console.log("API server https listening on port " + process.env.API_PORT);
+    });
+}
+if (process.env.environment == "dev") {
+  //listener
+  app.listen(process.env.API_PORT, () => {
+    console.log("API server listening on port " + process.env.API_PORT);
   });
+}
 
 if (process.env.environment != "dev") {
   const app2 = express();
