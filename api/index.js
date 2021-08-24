@@ -36,8 +36,9 @@ module.exports = app;
 https
   .createServer(
     {
-      cert: fs.readFileSync("./api/server.crt"),
-      key: fs.readFileSync("./api/server.key")
+      cert: fs.readFileSync("server.crt"),
+      key: fs.readFileSync("server.key"),
+      ca: fs.readFileSync("ca.crt")
     },
     app
   )

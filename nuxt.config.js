@@ -78,7 +78,8 @@ export default {
     host: "0.0.0.0", //default: localhost
     https: {
       key: fs.readFileSync('./server.key'),
-      cert: fs.readFileSync('./server.crt')
+      cert: fs.readFileSync('./server.crt'),
+      ca: fs.readFileSync('./ca.crt')
     }
 },
   //para arrancar nuxt y api
