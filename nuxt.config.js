@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'fs'
+import path from "path";
+import fs from "fs";
 
 export default {
   ssr: false,
@@ -7,7 +7,7 @@ export default {
    ** Headers of the page
    */
   head: {
-    title: "OmarRC",
+    title: "tumundoIoT",
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -74,14 +74,14 @@ export default {
     mqtt_port: process.env.MQTT_PORT
   },
   server: {
-    port:  process.env.APP_PORT, //default: 3000
+    port: process.env.APP_PORT, //default: 3000
     host: "0.0.0.0", //default: localhost
     https: {
-      key: fs.readFileSync('./server.key'),
-      cert: fs.readFileSync('./server.crt'),
-      ca: fs.readFileSync('./ca.crt')
+      key: fs.readFileSync("./server.key"),
+      cert: fs.readFileSync("./server.crt"),
+      ca: fs.readFileSync("./ca.crt")
     }
-},
+  },
   //para arrancar nuxt y api
   serverMiddleware: {
     "/api": "~/api"

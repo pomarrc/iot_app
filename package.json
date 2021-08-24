@@ -1,7 +1,7 @@
 {
-  "name": "omarrc_app",
+  "name": "tumundoiot",
   "version": "1.0.0",
-  "description": "omarrc_app",
+  "description": "tumundoiot_app",
   "author": "omarrc",
   "scripts": {
     "dev": "nuxt",
