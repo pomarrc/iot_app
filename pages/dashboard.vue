@@ -5,6 +5,11 @@
       :key="index"
       :class="[widget.column]"
     >
+      <Espcam
+        v-if="widget.widget == 'camera'"
+        :config="fixWidget(widget)"
+      ></Espcam>
+
       <Rtnumberchart
         v-if="widget.widget == 'numberchart'"
         :config="fixWidget(widget)"

@@ -17,6 +17,8 @@
               placeholder="Select Widget"
               style="width: 100%;"
             >
+              <el-option class="text-dark" value="camera" label="ESP32 Cam <-">
+              </el-option>
               <el-option
                 class="text-dark"
                 value="numberchart"
@@ -48,6 +50,74 @@
 
             <br />
             <br />
+
+            <!-- FORM CAMERA  TYPE -->
+            <div v-if="widgetType == 'camera'">
+              <base-input
+                v-model="cameraConfig.cameraName"
+                label="Camera Name"
+                type="text"
+              >
+              </base-input>
+
+              <el-select
+                v-model="cameraConfig.column"
+                class="select-success"
+                placeholder="Select Column Width"
+                style="width: 100%;"
+              >
+                <el-option
+                  class="text-dark"
+                  value="col-3"
+                  label="col-3"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-4"
+                  label="col-4"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-5"
+                  label="col-5"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-6"
+                  label="col-6"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-7"
+                  label="col-7"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-8"
+                  label="col-8"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-9"
+                  label="col-9"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-10"
+                  label="col-10"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-11"
+                  label="col-11"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-12"
+                  label="col-12"
+                ></el-option>
+              </el-select>
+            </div>
 
             <!-- FORMS NUMBER CHART TYPE -->
             <div v-if="widgetType == 'numberchart'">
@@ -532,6 +602,10 @@
 
           <!-- WIDGET PREVIEW -->
           <div class="col-6">
+            <Espcam
+              v-if="widgetType == 'camera'"
+              :config="cameraConfig"
+            ></Espcam>
             <Rtnumberchart
               v-if="widgetType == 'numberchart'"
               :config="ncConfig"
@@ -581,6 +655,10 @@
           @click="deleteWidget(index)"
           style="margin-bottom: 10px;"
         ></i>
+        <Espcam
+          v-if="widget.widget == 'camera'"
+          :config="cameraConfig"
+        ></Espcam>
 
         <Rtnumberchart
           v-if="widget.widget == 'numberchart'"
@@ -724,6 +802,17 @@ export default {
       widgetType: "",
       templateName: "",
       templateDescription: "",
+
+      cameraConfig: {
+        cameraName: "",
+        column: "col-4",
+        variableType: "output",
+        selectedDevice: {
+          name: "Home",
+          dId: "8888"
+        },
+        widget: "camera"
+      },
 
       ncConfig: {
         userId: "sampleuserid",
@@ -922,6 +1011,10 @@ export default {
 
     //Add Widget
     addNewWidget() {
+      if (this.widgetType == "camera") {
+        this.cameraConfig.variable = this.makeid(10);
+        this.widgets.push(JSON.parse(JSON.stringify(this.cameraConfig)));
+      }
       if (this.widgetType == "numberchart") {
         this.ncConfig.variable = this.makeid(10);
         this.widgets.push(JSON.parse(JSON.stringify(this.ncConfig)));
