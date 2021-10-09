@@ -4,11 +4,9 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const colors = require("colors");
-const WebSocket = require("ws");
 const fs = require("fs");
 const https = require("https");
 require("dotenv").config();
-
 
 //instances
 const app = express();
@@ -36,7 +34,8 @@ module.exports = app;
 
 //listener https
 if (process.env.environment == "prod") {
-  https .createServer(
+  https
+    .createServer(
       {
         cert: fs.readFileSync("server.crt"),
         key: fs.readFileSync("server.key"),
@@ -118,10 +117,12 @@ mongoose.connect(uri, options).then(
 //*******    C A M A R I T A ****************** */
 //********************************************* */
 
-const WS_PORT = 65081;
+const WebSocket = require("wss");
 
-const wsServer = new WebSocket.Server({ server:app }, () =>
-  console.log(`WSS server listening`)
+const WSS_PORT = 65081;
+
+const wsServer = new WebSocket.Server({ port: WSS_PORT }, () =>
+  console.log(`WSS Server is listening at ${WS_PORT}`)
 );
 
 let connectedClients = [];
