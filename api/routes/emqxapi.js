@@ -99,7 +99,7 @@ async function createResources() {
     const data1 = {
       type: "web_hook",
       config: {
-        url: "http://" + process.env.EMQX_NODE_HOST + ":3001/api/saver-webhook",
+        url: process.env.HTTP_PREFIX + process.env.EMQX_NODE_HOST + ":3001/api/saver-webhook",
         headers: {
           token: process.env.EMQX_API_TOKEN
         },
@@ -111,7 +111,7 @@ async function createResources() {
     const data2 = {
       type: "web_hook",
       config: {
-        url: "http://" + process.env.EMQX_NODE_HOST + ":3001/api/alarm-webhook",
+        url:  process.env.HTTP_PREFIX  + process.env.EMQX_NODE_HOST + ":3001/api/alarm-webhook",
         headers: {
           token: process.env.EMQX_API_TOKEN
         },

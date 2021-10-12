@@ -78,9 +78,9 @@ export default {
     host: "0.0.0.0", //default: localhost
     //activar en produccion
      https: {
-       key: fs.readFileSync("./server.key"),
-       cert: fs.readFileSync("./server.crt"),
-       ca: fs.readFileSync("./ca.crt")
+       key: fs.readFileSync("./certs/key.key"),
+       cert: fs.readFileSync("./certs/cert.pem"),
+       ca: fs.readFileSync("./certs/ca.pem")
      }
   },
   //para arrancar nuxt y api

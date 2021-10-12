@@ -38,15 +38,16 @@ module.exports = app;
 if (process.env.environment == "prod") {
   https .createServer(
       {
-        cert: fs.readFileSync("server.crt"),
-        key: fs.readFileSync("server.key"),
-        ca: fs.readFileSync("ca.crt")
+        cert: fs.readFileSync("./certs/cert.pem"),
+        key: fs.readFileSync("./certs/key.key"),
+        ca: fs.readFileSync("./certs/ca.pem")
       },
       app
     )
     .listen(process.env.API_PORT, () => {
       console.log("API server https listening on port " + process.env.API_PORT);
     });
+
 }
 if (process.env.environment == "dev") {
   //listener
@@ -118,11 +119,24 @@ mongoose.connect(uri, options).then(
 //*******    C A M A R I T A ****************** */
 //********************************************* */
 
-const WS_PORT = 65081;
 
-const wsServer = new WebSocket.Server({ server:app }, () =>
-  console.log(`WSS server listening`)
-);
+var processRequest = function(req, res) {
+    console.log("Request received.")
+};
+var httpServ = require('https');
+var ssl = null;
+
+ssl = httpServ .createServer(
+      {
+        cert: fs.readFileSync("./certs/cert.pem"),
+        key: fs.readFileSync("./certs/key.key"),
+        ca: fs.readFileSync("./certs/ca.pem")
+      },processRequest).listen(process.env.WSS_PORT); 
+
+const wsServer = new WebSocket.Server({ server: ssl }, () =>
+  console.log(`>>>>>>WSS server listening`)
+  );
+
 
 let connectedClients = [];
 let connectedCams = [];
