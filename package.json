@@ -8,6 +8,7 @@
     "devn": "nodemon api/index.js --exec babel-node",
     "build": "nuxt build",
     "generate": "nuxt generate",
+    "devapiga":"nodemon index_ga.js --exec babel-node",
     "start": "nuxt start"
   },
   "dependencies": {
