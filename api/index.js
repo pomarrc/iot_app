@@ -118,7 +118,9 @@ mongoose.connect(uri, options).then(
 //********************************************* */
 //*******    C A M A R I T A ****************** */
 //********************************************* */
-
+//prod
+var wsServer = null;
+if (process.env.environment == "prod") {
 
 var processRequest = function(req, res) {
     console.log("Request received.")
@@ -133,10 +135,19 @@ ssl = httpServ .createServer(
         ca: fs.readFileSync("./certs/ca.pem")
       },processRequest).listen(process.env.WSS_PORT); 
 
-const wsServer = new WebSocket.Server({ server: ssl }, () =>
-  console.log(`>>>>>>WSS server listening`)
+  wsServer = new WebSocket.Server({ server: ssl }, () =>
+  console.log('>>>>> WSS server  listening ')
+  );
+}
+
+//dev
+if (process.env.environment == "dev") {
+
+  wsServer = new WebSocket.Server({port: process.env.WSS_PORT},() =>
+  console.log('>>>>> WS Server  listening ')
   );
 
+}
 
 let connectedClients = [];
 let connectedCams = [];

@@ -31,8 +31,12 @@ export default {
     startCam() {
       var WS_URL = "";
       
+      if (process.env.environment == "prod"){
         WS_URL = "wss://tumundoiot.ml:65081"; //websocket server vps
-      
+      } else {
+        WS_URL = "ws://192.168.0.202:65081"; //websocket server dev
+      }
+
       
       this.ws = new WebSocket(WS_URL);
       let urlObject_1, urlObject_2, urlObject_3;
