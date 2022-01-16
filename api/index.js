@@ -11,7 +11,7 @@ require("dotenv").config();
 
 //instances
 const app = express();
-
+const app3 = express();
 //express config
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -21,6 +21,18 @@ app.use(
   })
 );
 app.use(cors());
+//////////////////////////////
+app3.use(morgan("tiny"));
+app3.use(express.json());
+app3.use(
+  express.urlencoded({
+    extended: true
+  })
+);
+app3.use(cors());
+/////////////////////////////
+
+
 
 //express routes
 app.use("/api", require("./routes/devices.js"));
@@ -30,8 +42,18 @@ app.use("/api", require("./routes/webhooks.js"));
 app.use("/api", require("./routes/emqxapi.js"));
 app.use("/api", require("./routes/alarms.js"));
 app.use("/api", require("./routes/dataprovider.js"));
-
 module.exports = app;
+///////////////////
+app3.use("/api", require("./routes/devices.js"));
+app3.use("/api", require("./routes/users.js"));
+app3.use("/api", require("./routes/templates.js"));
+app3.use("/api", require("./routes/webhooks.js"));
+app3.use("/api", require("./routes/emqxapi.js"));
+app3.use("/api", require("./routes/alarms.js"));
+app3.use("/api", require("./routes/dataprovider.js"));
+module.exports = app3;
+
+///////////////////
 
 //listener https
 if (process.env.environment == "prod") {
@@ -67,6 +89,14 @@ if (process.env.environment == "prod") {
     return res.redirect("https://" + req.headers["host"] + req.url);
   });
 }
+
+//////////////////////////
+ app3.listen(3003, () => {
+    console.log("API server listening http on port " + 3003);
+  });
+
+/////////////////////////
+
 
 //Mongo Connection
 const mongoUserName = process.env.MONGO_USERNAME;
