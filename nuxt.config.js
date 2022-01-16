@@ -76,13 +76,13 @@ export default {
   },
   server: {
     port: process.env.APP_PORT, //default: 3000
-    host: "0.0.0.0", //default: localhost
+    host: "0.0.0.0" //default: localhost
     //activar en produccion
-     https: {
-       key: fs.readFileSync("./certs/key.key"),
-       cert: fs.readFileSync("./certs/cert.pem"),
-       ca: fs.readFileSync("./certs/ca.pem")
-     }
+    // https: {
+    //   key: fs.readFileSync("./certs/key.key"),
+    //   cert: fs.readFileSync("./certs/cert.pem"),
+    //   ca: fs.readFileSync("./certs/ca.pem")
+    // }
   },
   //para arrancar nuxt y api
   serverMiddleware: {

@@ -9,7 +9,6 @@ const fs = require("fs");
 const https = require("https");
 require("dotenv").config();
 
-
 //instances
 const app = express();
 
@@ -36,7 +35,8 @@ module.exports = app;
 
 //listener https
 if (process.env.environment == "prod") {
-  https .createServer(
+  https
+    .createServer(
       {
         cert: fs.readFileSync("./certs/cert.pem"),
         key: fs.readFileSync("./certs/key.key"),
@@ -47,7 +47,6 @@ if (process.env.environment == "prod") {
     .listen(process.env.API_PORT, () => {
       console.log("API server https listening on port " + process.env.API_PORT);
     });
-
 }
 if (process.env.environment == "dev") {
   //listener
@@ -56,7 +55,7 @@ if (process.env.environment == "dev") {
   });
 }
 
-if (process.env.environment != "dev") {
+if (process.env.environment == "prod") {
   const app2 = express();
 
   app2.listen(3002, function() {
@@ -121,32 +120,33 @@ mongoose.connect(uri, options).then(
 //prod
 var wsServer = null;
 if (process.env.environment == "prod") {
+  var processRequest = function(req, res) {
+    console.log("Request received.");
+  };
+  var httpServ = require("https");
+  var ssl = null;
 
-var processRequest = function(req, res) {
-    console.log("Request received.")
-};
-var httpServ = require('https');
-var ssl = null;
-
-ssl = httpServ .createServer(
+  ssl = httpServ
+    .createServer(
       {
         cert: fs.readFileSync("./certs/cert.pem"),
         key: fs.readFileSync("./certs/key.key"),
         ca: fs.readFileSync("./certs/ca.pem")
-      },processRequest).listen(process.env.WSS_PORT); 
+      },
+      processRequest
+    )
+    .listen(process.env.WSS_PORT);
 
   wsServer = new WebSocket.Server({ server: ssl }, () =>
-  console.log('>>>>> WSS server  listening ')
+    console.log(">>>>> WSS server  listening ")
   );
 }
 
 //dev
 if (process.env.environment == "dev") {
-
-  wsServer = new WebSocket.Server({port: process.env.WSS_PORT},() =>
-  console.log('>>>>> WS Server  listening ')
+  wsServer = new WebSocket.Server({ port: process.env.WSS_PORT }, () =>
+    console.log(">>>>> WS Server  listening ")
   );
-
 }
 
 let connectedClients = [];
