@@ -7,8 +7,8 @@
       <h3 class="card-title"></h3>
       <GmapMap
         style="width: 100%; height: 350px"
-        :center="{ lat: 4.666127, lng: -74.09343 }"
-        :zoom="5"
+        :center="position"
+        :zoom="15"
         ref="map"
       >
         <GmapMarker :position="position" :clickable="true" :draggable="true">
@@ -24,7 +24,7 @@ export default {
   props: ["config"],
   data() {
     return {
-      position: { lat: 4.666127, lng: -74.09343 }
+      position: { lat: 19.664963, lng: -99.116039 }
     };
   },
   mounted() {
