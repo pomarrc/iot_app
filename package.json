@@ -8,7 +8,7 @@
     "devn": "nodemon api/index.js --exec babel-node",
     "build": "nuxt build",
     "generate": "nuxt generate",
-    "devapiga":"nodemon index_ga.js --exec babel-node",
+    "devapiga": "nodemon index_ga.js --exec babel-node",
     "start": "nuxt start"
   },
   "dependencies": {
@@ -42,6 +42,7 @@
     "register-service-worker": "^1.5.2",
     "tween.js": "^16.6.0",
     "vue-chartjs": "^3.4.0",
+    "vue2-google-maps": "^0.10.7",
     "vue2-transitions": "^0.2.3"
   },
   "devDependencies": {

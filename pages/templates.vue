@@ -33,9 +33,10 @@
               </el-option>
               <el-option
                 class="text-dark"
-                value="map"
+                value="mapa"
                 label="Map INPUT <-"
               ></el-option>
+
               <el-option
                 class="text-dark"
                 value="switch"
@@ -598,6 +599,80 @@
 
               <br /><br />
             </div>
+
+            <!-- FORM MAPA TYPE -->
+            <div v-if="widgetType == 'mapa'">
+              <base-input
+                v-model="iotMap.variableFullName"
+                label="Var Name"
+                type="text"
+              >
+              </base-input>
+
+              <base-input
+                v-model="iotMap.variableSendFreq"
+                label="Send Freq"
+                type="text"
+              ></base-input>
+
+              <el-select
+                v-model="iotMap.column"
+                class="select-success"
+                placeholder="Select Column Width"
+                style="width: 100%;"
+              >
+                <el-option
+                  class="text-dark"
+                  value="col-3"
+                  label="col-3"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-4"
+                  label="col-4"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-5"
+                  label="col-5"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-6"
+                  label="col-6"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-7"
+                  label="col-7"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-8"
+                  label="col-8"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-9"
+                  label="col-9"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-10"
+                  label="col-10"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-11"
+                  label="col-11"
+                ></el-option>
+                <el-option
+                  class="text-dark"
+                  value="col-12"
+                  label="col-12"
+                ></el-option>
+              </el-select>
+            </div>
           </div>
 
           <!-- WIDGET PREVIEW -->
@@ -622,6 +697,8 @@
               v-if="widgetType == 'indicator'"
               :config="iotIndicatorConfig"
             ></Iotindicator>
+
+            <Map v-if="widgetType == 'mapa'" :config="iotMap"></Map>
           </div>
         </div>
 
@@ -679,6 +756,7 @@
           v-if="widget.widget == 'indicator'"
           :config="widget"
         ></Iotindicator>
+        <Map v-if="widget.widget == 'mapa'" :config="widget"></Map>
       </div>
     </div>
 
@@ -882,6 +960,21 @@ export default {
         widget: "button",
         class: "danger",
         message: "{'fanstatus': 'stop'}"
+      },
+      iotMap: {
+        userId: "userid",
+        selectedDevice: {
+          name: "Mapa Ubication",
+          dId: "8888"
+        },
+        variableFullName: "system",
+        variable: "varname",
+        variableType: "input",
+        variableSendFreq: "20",
+        class: "primary",
+        widget: "mapa",
+        icon: "fa-sun",
+        column: "col-6"
       }
     };
   },
@@ -1033,6 +1126,10 @@ export default {
       if (this.widgetType == "indicator") {
         this.iotIndicatorConfig.variable = this.makeid(10);
         this.widgets.push(JSON.parse(JSON.stringify(this.iotIndicatorConfig)));
+      }
+      if (this.widgetType == "mapa") {
+        this.iotMap.variable = this.makeid(10);
+        this.widgets.push(JSON.parse(JSON.stringify(this.iotMap)));
       }
     },
 

@@ -52,7 +52,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [`~/plugins/dashboard-plugin.js`],
+  plugins: [`~/plugins/dashboard-plugin.js`, `~/plugins/vue2-google-maps.js`],
   //autoimport
   components: true,
   /*
@@ -76,7 +76,7 @@ export default {
   },
   server: {
     port: process.env.APP_PORT, //default: 3000
-    host: "0.0.0.0" //default: localhost
+    host: "192.168.0.201" //default: localhost
     //activar en produccion
     // https: {
     //   key: fs.readFileSync("./certs/key.key"),
